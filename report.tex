@@ -3,6 +3,8 @@
 \usepackage{algpseudocode}
 \usepackage{algorithm}
 \usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{complexity}
 \usepackage{amsfonts}
 \usepackage[british,english]{babel}
@@ -10,6 +12,7 @@
 \usepackage[utf8x]{inputenc}
 \usepackage{listings, babel}
 \usepackage{graphicx}
+\usepackage{subcaption}
 \lstset{breaklines=true,basicstyle=\ttfamily}
 \usepackage[margin=2cm]{geometry}
 
@@ -81,7 +84,7 @@ A \emph{parameterization} is a polynomial time computable function $k : \Sigma^*
 \end{defn}
 
 A parameterized decision problem is given on the format: $(L, k)$ where $L \subseteq \Sigma^*$ and $k$ is a parameterization of $L$.
-The following is a common parameterization of vertex cover, known as $p-VERTEX-COVER$:
+The following is a common parameterized version of vertex cover, known as $\textsc{p-VERTEX-COVER}$:
 \begin{itemize}
 \item Input: Graph $G$, number of vertices in cover $s$
 \item Parameterization: $k((G, s)) = s$.
@@ -130,7 +133,7 @@ Slices are used later on when relating parameterized complexity classes to class
 
 \section{Fixed parameter tractability}
 Given the formalized notion of parameterized languages it is of interest to determine relative hardness and form a natural class hierarchy.
-In classical complexity we have the notions of $\P$, $\NP$, and many others, but these two capture the essential relative difficulty.
+In classical complexity we have the notions of $\P$, $\NP$, and many others, but these two capture the essential relative difficulty of many problems.
 
 The first step is to define allowed runtime of problems considered being tractable.
 
@@ -365,17 +368,17 @@ A generalization is the \textsc{k-path} problem which decides if there are any p
 The counting version \textsc{\#k-path} determines the number of k-paths in $G$, and the decision version reduces naturally.
 As noted in the section on parameterized complexity, it is known that \textsc{\#k-path} is \textsc{\#W[1]}-hard.
 Such a result implies that unless $P=NP$ there is no algorithm with running time $f(k)n^{O(1)}$, for some computable function $f$. % TODO: Need to clarify n/k here
-This motivates research into faster but still exponential time algorithms for \textsc{\#k-path}, but also any generalizations of the problem.
-\textsc{\#k-path} has seen some recent success; (TODO REF BJÖRKLUND HAMILTIONIAN) introduces an algebraic approach with running time TODO.
+This motivates research into faster but still exponential time algorithms for \textsc{\#k-path}, but also generalizations of the problem.
+\textsc{\#k-path} has seen some recent success; (TODO REF BJÖRKLUND HAMILTIONIAN) introduced an algebraic approach with running time TODO.
 
 Generalizing the problem of counting paths to subgraphs maintains the same fundamental hardness result, but is still worth to consider in a non-naive way.
 Formally we are given an undirected pattern graph $P$ and an undirected host graph $H$, and we wish to count the number of occurrences of $P$ in $H$.
 Enumerating all subgraphs of $H$ isomorphic to $P$ yields a running time of $O(|H|^{|P|})$.
 
 A more efficient approach is to limit the type of graphs being considered and exploit this special structure when counting.
-This approach has previously resulted in \emph{meet-in-the-middle} algorithms, such as (TODO REF) which only considers pattern graphs having an independent of size $\frac{|P|}{2}$,
+This approach has previously resulted in \emph{meet-in-the-middle} algorithms, such as (TODO REF) which only considers pattern graphs having an independent set of size $\frac{|P|}{2}$,
 with running time $O^*(|H|^{\frac{|P|}{2}})$.
-The defining property of this family of algorithms is the running time having a factor $|H|^{\frac{|P|}{2}}$.
+The defining property of this family of algorithms is that the running time contains a factor $|H|^{\frac{|P|}{2}}$.
 (TODO: REF FOMIN) established a similar result for thin pattern graphs, with running time $O^*(|H|^{\frac{|P|}{2} + 2p})$.
 \emph{Thin subgraphs} have constrained pathwidth ($p$) which is a measure describing the width of a path decomposition of the graph.
 These properties are defined and discussed in the next section.
@@ -397,7 +400,7 @@ A rooted tree decomposition of an undirected graph $G = (V, E)$ is a triple $(T
 \begin{itemize}
 \item $r$ is a root vertex of $T$.
 \item $T$ is a tree where each vertex has a \emph{bag} $X_i \in X$ containing a set of vertices.
-\item For every edge ${v_1, v_2} \in E$ there is some $X_i$ s.t. $\left\{v_1, x_2\right\} \subseteq X_i$.
+\item For every edge $\left\{v_1, v_2\right\} \in E$ there is some $X_i$ s.t. $\left\{v_1, x_2\right\} \subseteq X_i$.
 \item For every $v \in V$, the bags containing $v$ induce a subtree of $T$.
 \end{itemize}
 \end{defn}
@@ -408,13 +411,13 @@ Tree decompositions, also known as join trees, have several applications outside
 A central measure of complexity is the following:
 
 \begin{defn}
-The \emph{width} of a tree decomposition $(T, r, X)$ is $w(T) = max_{X_i \in X} \left\{ |X_i| \right\} - 1$.
+The \emph{width} of a tree decomposition $(T, r, X)$ is $w(T) = max_{X_i \in X} |X_i| - 1$.
 \end{defn}
 Commonly the minimum width over all decompositions is used, which is known as \emph{treewidth}, or $w_t(T)$.
-\emph{Pathwidth} $w_p(T)$ is defined similarly and it bounds the treewidth, i.e. $w_t(T) \leq w_p(T)$, for any decomposition (TODO: REF).
+\emph{Pathwidth}, $w_p(T)$, is defined similarly and it bounds the treewidth, i.e. $w_t(T) \leq w_p(T)$, for any decomposition (TODO: REF).
 
 Tree decompositions can be computed in linear time when the treewidth is bounded by some constant (TODO: REF).
-In practice this does not imply feasibility since the algorithms can still be exponential in treewidth, which is the case of the proof referenced above.
+In practice this does not imply feasibility since the algorithms can still be exponential in the treewidth, which is the case of the proof referenced above.
 
 In addition, tree decompositions can be transformed in order to allow more efficient traversals:
 
@@ -428,7 +431,7 @@ A \emph{nice tree decomposition} is a rooted tree decomposition $(T, r, X)$ sat
 \end{itemize}
 \end{defn}
 
-(TODO: REF) presents a simple polynomial time algorithms for criteria two and three.
+(TODO: REF) presents simple polynomial time algorithms for criteria two and three.
 
 % TODO: Decide if to include labeling
 % The nodes of such a decomposition are typically labeled based on the position within the tree:
@@ -438,26 +441,31 @@ A \emph{nice tree decomposition} is a rooted tree decomposition $(T, r, X)$ sat
 % \end{itemize}
 % \end{defn}
 
-As a concrete example, consider the graph below decomposed into a nice tree decomposition.
+As a concrete example, consider the graph in figure \ref{fig:arbitrary-graph} decomposed into a nice tree decomposition (figure \ref{fig:decomp-graph}).
 
 \begin{figure}[here]
+\centering
+\begin{subfigure}[b]{\linewidth}
 \centering
 \includegraphics[width=6cm]{images/input_graph.png} 
 \caption[Graph]{Input graph}
 \label{fig:arbitrary-graph}
+\end{subfigure}
+\begin{subfigure}[b]{\linewidth}
 \centering
 \includegraphics[width=6cm]{images/nice_tree_decomp.png} 
 \caption[Decomposition]{Tree decomposition of graph in figure \ref{fig:arbitrary-graph} (TBD)}
 \label{fig:decomp-graph}
+\end{subfigure}
 \end{figure}
 
 %TODO: Replace with valid nice decomposition, tag with root, and also write treewidth explicitly
 \begin{figure}[here]
 \end{figure}
 
-\section{Counting injective homomorphisms}
-As mentioned when defining the naive algorithm for counting isomorphisms, it is possible to consider maps of $P$ onto $H$, and count the number of unique such maps.
-More formally we have the following:
+\section{Counting homomorphisms}
+One approach to counting isomorphisms is to consider maps of $P$ onto subgraphs of $H$, and count the number of such injective maps.
+Formally we have the following:
 
 \begin{defn}
 A \emph{homomorphism} is a map $\phi : V(P) \rightarrow V(H)$ that preserves structure,
@@ -466,56 +474,56 @@ i.e. $\left\{v_1, v_2\right\} \in E(P) \Leftrightarrow \left\{\phi(v_1), \phi(v_
 
 
 An \emph{injective homomorphism} has an injective map.
-%TODO: Verify runtime
-%TODO: Check usage of subscript (existing homo.)
 (TODO: REF Diaz) introduced an algorithm for computing the number of homomorphisms $hom_{\phi}(P, H)$ in time $O^*(|H|^{|P|})$.
 The paper uses the terminology \emph{colorings} and requires an existing nice tree decomposition of the pattern graph, which can be computed in polynomial time in the case of bounded treewidth.
 
-The number of isomorphic subgraphs can be evaluated by calculating the number of injective homomorphisms from $P$ to $H$, and dividing by the number of automorphisms
+The number of isomorphic subgraphs can be evaluated by calculating the number of injective homomorphisms from $P$ onto subgraphs of $H$, divided by the number of automorphisms
 , i.e. $\frac{inj(P, H)}{aut(P)} = \frac{inj(P, H)}{inj(P, P)}$ (TODO: REF Fomin).
 
-In order to retrieve partial results for the number of injective homomorphisms $inj_{\phi}(P, H)$ it is possible to apply inclusion-exlusion by a theorem due to Fomin (TODO: Ref):
+In order to retrieve partial results for the number of injective homomorphisms $inj_{\phi}(P, H)$ it is possible to utilize apply inclusion-exclusion, as in a theorem due to Fomin (TODO: Ref Fomin):
 
 \begin{thm}
-%TODO: Verify runtime and add correct constraint on size of subset
-Given an injective homomorphism $\phi : P \rightarrow H$ and $S \subseteq P$ then $inj_{\phi}(P \setminus S, H \setminus \phi(S))$ can be computed in time $O^*(|H|^{|P|})$.
+\label{thm:fomin}
+Given some $S \subseteq P$ and an injective homomorphism $\phi : S \rightarrow H$ then $inj_{\phi}(P, H[S' \cup \phi(S)])$ can be computed in time $O^*(|H|^{|P|})$, for all $S' \subseteq H \setminus \phi(S)$ of size $|P| - |S|$.
 \end{thm}
 
 %TODO: Add description of the Fomin proof and how it uses hom() in Diaz
 
-Hence this result can be used as a subroutine when counting the total number of injective homomorphisms.
+This result can be used as a subroutine when counting the total number of injective homomorphism.
 
 \section{Thin subgraphs as weighted disjoint triples}
 Using the notions introduced up to now, it is possible to study the contributions made by (TODO: REF KASKI).
+The paper introduces the following triples:
 
 \begin{defn}
-$\Delta(f, g, h) = \Sigma_{A, B, C \in S ; A \cap B = A \cap C = B \cap C = \emptyset} f(A)g(B)h(C)$
+$\Delta(f, g, h) = \Sigma_{\substack{A, B, C \in S\\A \cap B = A \cap C = B \cap C = \emptyset}} f(A)g(B)h(C)$
 \end{defn}
 
-Similarly to the final algorithm presented by (TODO: REF Fomin), (TODO: REF kasi) uses a partition scheme which counts all injective isomorphisms in parts.
+These are used to express counting subgraphs in terms of algebraic objects.
+Similarly to the final algorithm presented by (TODO: REF Fomin), (TODO: REF Kaski) uses a partition scheme which counts all injective isomorphisms in parts.
 
 \begin{defn}
-A 3-partitioning of the pattern graph $P$ with bounded pathwidth $p$ is a collection of pairwise disjoint sets $L \cup S \cup M \cup T \cup R = V(P)$, such that:
+A 5-partitioning of the pattern graph $P$ with bounded pathwidth $p$ is a collection of pairwise disjoint sets $L \cup S \cup M \cup T \cup R = V(P)$, such that:
 \begin{itemize}
 \item Every edge $e \in E(P)$ connects vertices between at most two consecutive sets in the ordering $L, S, M, T, R$.
-\item The separators sets have size bounded in the pathwidth, i.e. $|S|, |T| \leq p$
+\item The separators sets $S$ and $T$ have size bounded in the pathwidth, i.e. $|S|, |T| \leq p$
 \item All remaining sets have $|L|, |M|, |R| \leq \frac{|P|}{3}$
 \end{itemize}
 \end{defn}
 
-Now consider creating a partial injective homomorphism $\phi$ mapping $S$ and $T$ onto $H$, as visualized in the following figure,
-where $A,B,C \subseteq (H \setminus \phi(S) \setminus \phi(T))$ :
+Now consider creating an injective homomorphism $\phi$ mapping $S$ and $T$ onto $H$, as visualized in the figure \ref{fig:homo-viz},
+where $A,B,C \subseteq (H \setminus \phi(S) \setminus \phi(T))$.
 
 \begin{figure}[here]
 \centering
 \includegraphics[width=10cm]{images/sketch_homo.png} 
-\caption[Mapping]{Mapping of pattern graph onto host graph given an injective homomorphism (TODO: vectorize)}
+\caption[Mapping]{Mapping of pattern graph onto host graph given an injective homomorphism $\phi$ (TODO: vectorize)}
 \label{fig:homo-viz}
 \end{figure}
 
 Enumerating all such possible $O(|H|^{2p})$ injective homomorphisms mapping $S$ and $T$ to the host graph,
-all possible extensions to $\phi$ can be considered using theorem TODO.
-More formally the following functions over the subsets of the host graph are defined, for each candidate $\phi$:
+all possible extensions to $\phi$ can be considered using theorem \ref{thm:fomin}.
+Formally the following functions over subsets of the host graph are defined, for each candidate $\phi$:
 
 \begin{itemize}
 \item $f_\phi(A)$: The number of injective homomorphisms mapping $P[L \cup S]$ onto $H[A \cup \phi(S)]$.
@@ -524,11 +532,83 @@ More formally the following functions over the subsets of the host graph are de
 \end{itemize}
 
 Hence the final number of injective homomorphisms, given a candidate $\phi$, is $\Delta_\phi(f_\phi, g_\phi, h_\phi)$.
-Summing over all $\Delta_\phi$ and dividing by the number of automorphisms gives the final number of isomorphic subgraphs.
 
 \section{Efficient weighted disjoint triples}
-TODO: this section will describe how weighted disjoint triples can be efficiently evaluated using a lineary system of equations
+In the previous section the problem of counting isomorphic subgraphs was expressed as evaluating weighted disjoint triples.
+The main contribution of the new result (Kaski) relates to how these can be efficiently evaluated, after all of the
+injective homomorphisms on certain subgraphs have been calculated.
+In other words we would like to calculate $\Delta_\phi$ efficiently.
 
+The approach taken by the paper is to formulate the problem in terms of a linear equation system which can be constructed and solved within the runtime bound.
+Hence the first step is to formulate a set of indeterminates to solve for.
+Note that, for $q$-sized subsets $A,B,C$, it holds that $|A\oplus B\oplus C|\equiv |A|+|B|+|C|=3q\equiv q\pmod 2\,$ (TODO: REF), where $\oplus$ denotes symmetric difference.
+This implies that the symmetric difference is either odd or even, depending on $q$.
+It follows that there are a total of $\lfloor \frac{3q}{2} \rfloor$ indeterminates on the following form:
+
+\begin{defn}
+$x_j=x_j(f_\phi,g_\phi,h_\phi)=\sum_{\substack{A,B,C\in\binom{U}{q}\\|A\oplus B\oplus C|=j}}
+f_{\phi}(A)g_{\phi}(B)h_{\phi}(C)\,.$
+\end{defn}
+
+Solving for $x_{3q}$ results in $\Delta_\phi$, since the size of the symmetric difference is maximized when all three subsets are disjoint (TODO: REF). 
+
+Given these indeterminates, the paper uses two different types of equations which combined together yield the final linear equation system.
+The first family of equations is known as \emph{basic}:
+
+\begin{defn}
+A basic equation for some $i$ is:
+
+\begin{equation}
+\label{eq:yi}
+y_i=
+\sum_{(u_1,u_2,\ldots,u_i)\in U^i}
+T_0\bigl(\oplus_{\ell=1}^i\{u_\ell\}\bigr)
+-T_1\bigl(\oplus_{\ell=1}^i\{u_\ell\}\bigr)\,.
+\end{equation}
+
+where
+
+\begin{equation}
+T_p(Z)=
+\sum_{\substack{A,B,C\in\binom{U}{q}\\|(A\oplus B\oplus C)\cap Z|\equiv p\!\!\!\pmod 2}}
+f_\phi(A)g_\phi(B)h_\phi(C)\,.
+\end{equation}
+\end{defn}
+
+Combined with coefficients from a \emph{Vandermonde matrix}, given by $v_{ij} = (n - 2j)^i$, (TODO: REF Kaski) proves that $\Sigma_j v_{ij}x_{j} = y_i$ holds.
+
+The second family of equations is the following:
+
+\begin{defn}
+A simple equation is the following, which holds for all indeterminates $x_j$:
+
+\begin{equation}
+\label{eq:xj-direct}
+x_j
+=
+\sum_{\substack{\ell=q-j\\\ell\equiv 0\!\!\!\!\!\pmod 2}}^{q+j}
+\sum_{D\in\binom{U}{\ell}}
+\sum_{\substack{A,B\in\binom{U}{q}\\A\oplus B=D}}
+f_\phi(A)g_\phi(B)
+\sum_{\substack{C\in\binom{U}{q}\\|C\cap D|=(q+\ell-j)/2}}h_\phi(C)\,.
+\end{equation}
+
+\end{defn}
+
+Given a parameter $0 \leq \gamma \leq 1/2$ the paper now takes the following:
+\begin{itemize}
+\item $\lfloor (3/2 - \gamma)q \rfloor$ simple equations
+\item at least $\lfloor q \gamma \rfloor$ basic equations, reaching the required number of independent equations
+\end{itemize}
+
+The parameter $\gamma$ is chosen in order to balance the contribution in running time from both of the families, which depends on the efficiency of evaluating certain matrix multiplications.
+Assuming efficient evaluation of square matrix multiplication and multiplication of $N^\alpha * N$ with an $N * N^\alpha$ matrix, this results in time complexity $O^*(n^{0.4547|P|})$ in order to construct the system (TODO: REF Kaski).
+
+Following this, gaussian elimination is applied on the system in order to solve the resulting set of equations in polynomial time, and return $x_{3q}$ as $\Delta_\phi$.
+
+The procedure outlined above will be executed for all $O(|H|^{2p})$ injective homomorphisms $\phi$.
+Summing over all $\Delta_\phi$ and dividing by the number of automorphisms gives the final number of isomorphic subgraphs.
+Hence the final running time for counting thin subgraphs is $O^*(n^{0.4547|P| + 2p})$.
 
 \chapter{Implementation}
 This chapter covers an implementation of \emph{counting thin subgraphs} (TODO: REF Kaski).
