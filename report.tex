@@ -1,4 +1,5 @@
 \documentclass[a4paper,11pt]{report}
+\pdfoutput=1
 
 \usepackage{algpseudocode}
 \usepackage{algorithm}
@@ -12,6 +13,7 @@
 \usepackage[utf8x]{inputenc}
 \usepackage{listings, babel}
 \usepackage{graphicx}
+\usepackage[colorlinks=true,linktoc=page]{hyperref}
 \usepackage{subcaption}
 \lstset{breaklines=true,basicstyle=\ttfamily}
 \usepackage[margin=2cm]{geometry}
@@ -34,7 +36,8 @@
 \maketitle
 \abstract{
   This report is part of the examination in the project course Advanced Individual Course In Computer Science.
-  It consists of two main parts: an introduction to parameterized complexity theory, and a description of a recent result related to counting thin subgraphs.
+  It consists of two main parts: a text on parameterized complexity theory, and a description of a recent result related to counting thin subgraphs.
+  The first part is an introductory text explaining common complexity classes, known results, and lower bounds.
   In addition to describing the counting algorithm there is also an introduction to counting structural properties in graph theory.
   Finally an implementation of the counting algorithm is analyzed, including correctness verification and benchmarks.
 }
@@ -45,18 +48,20 @@
 This is an overview of this project, including the underlying purpose and the contents of this report.
 
 \section{Purpose}
-The advanced individual course in computer science (TODO: REF) course is a project course examined partly in writing - corresponding to this report.
+The advanced individual course in computer science course is a project course examined partly in writing - corresponding to this report.
 This project was divided into two parts; (1) gain an understanding of parameterized complexity, and (2) implement a recent result in graph theory.
 The purpose of the first part was to establish an understanding of how classical complexity theory generalizes, and gain working knowledge of how results are obtained.
-The second part is more practical and was included in order to improve the ability to read a paper and implement the results.
+The second part is more practical and was included in order to improve the ability to read papers and implement advanced algorithmic results.
 
 \section{Method}
+As part of writing this report, different papers and a book \cite{FG06} have been studied in order gain an understanding of the field.
 Parameterized complexity theory is described in the first part of this report and targets readers with some background in classical complexity.
 It gradually introduces common complexity classes and describes how to relate hardness between relevant problems.
 Following this, the second part involving counting thin subgraphs is introduced.
-This section describes how to implement a recent result by (TODO: REF Kaski).
+This section describes how to implement a recent result by Bj\"orklund \emph{et al.}~\cite{BHKK13}.
 As part of this, a range of subresults and relevant measures in graph theory are explained.
-Finally an implementation of this algorithm is discussed in the last chapter, with benchmarks and a discussion on correctness verification.
+In addition, the counting algorithm has been implemented.
+This implementation is discussed in the last chapter, together with benchmarks and a discussion on correctness verification.
 
 \chapter{Parameterized Complexity Theory}
 This chapter covers the first part of the project: parameterized complexity theory with existing results, complexity classes, and examples.
@@ -73,7 +78,7 @@ For example there might exist a polynomial time algorithm solving all cases when
 Parameterized complexity theory aims to provide a theoretical foundation for asymptotic analysis on a more fine-grained scale.
 This is achieved by not only considering inputs as a binary string but placing it into a context of the problem being solved.
 All of this is achieved while still maintaining classical complexity classes and focusing on existing results.
-This alternative view of complexity theory also forms natural ties with approximation algorithms, something which is studied in REF.
+This alternative view of complexity theory also forms natural ties with approximation algorithms, something which is studied in section \ref{sec:approx}.
 
 \section{Parameterized decision problems}
 The first step in developing a more fine-grained theory is to describe how problems are expressed.
@@ -200,17 +205,16 @@ The algorithm succeeds only when the set of edges is empty (and has hence been c
 \end{algorithmic}
 \end{algorithm}
 
-There is a notable connection between languages in $\FPT$ and the classical class \P:
+There is a notable connection between languages in $\FPT$ and the classical class \P \cite{FG06}:
 
 \begin{thm}
 All slices of a language in $\FPT$ are in $\P$.
 \end{thm}
 
-By the contrapositive we have that if there is some slice $(L, k)_{l'} \in \NPC$, it follows that $(L, k) \not \in \FPT$, assuming $\P \not = \NP$.
+By the contrapositive we have that if there is some slice $(L, k)_{l} \in \NPC$, it follows that $(L, k) \not \in \FPT$, assuming $\P \not = \NP$.
 An example of this is the fact that \lang{3-COLORABILITY} is \NP-hard, and hence under reasonable assumptions, it follows that $\lang{p-COLORABILITY} \not \in \FPT$.
 
 \section{Generalized classes}
-%TODO: This intro can be extended, for example with a formal definition of p-CLIQUE (probably should be)
 The class of fixed parameter tractable languages can be seen as examples of where effective algorithms have been found.
 There are however languages outside of this class; a concrete example of this is independent set, which can be parameterized as follows ($\textsc{p-INDSET}$):
 
@@ -231,8 +235,8 @@ $\PARANP$ is the set of parameterized languages decided by some algorithm runnin
 
 Naturally it holds that $\FPT \subseteq \PARANP$ since any deterministic algorithm (with equivalent time bound) can be evaluated by the corresponding NDTM.
 Similarly to $\NP$-complete languages there are also complete languages for $\PARANP$.
-These are characterized by the fact that if $(L, k) \in \PARANP$ s.t. $\exists l : (L, k)_l \in \NPC$ then $(L, k)$ is $\PARANP$-complete (TODO: Ref Flum).
-It is known that $\FPT = \PARANP$ iff $\P = \NP$ (TODO: REF Flum).
+These are characterized by the fact that if $(L, k) \in \PARANP$ s.t. $\exists l : (L, k)_l \in \NPC$ then $(L, k)$ is $\PARANP$-complete \cite{FG06}.
+It is known that $\FPT = \PARANP$ iff $\P = \NP$ \cite{FG06}.
 
 Another generalization is allowing more running time in the deterministic setting:
 
@@ -243,7 +247,7 @@ $x^{f(k(x))} + f(k(x))$, for some computable function $f$.
 
 %TODO: Maybe add argument surrounding EXPTIME DTM and the following result (should probably be done as an indenpendent arugment)?
 
-Interestingly the containment $\FPT \subset \XP$ is proper (TODO: Ref Flum).
+Interestingly the containment $\FPT \subset \XP$ is proper \cite{FG06}.
 In conclusion we have that $\FPT \subseteq \PARANP \cap \XP$.
 
 \section{Intermediate classes}
@@ -253,7 +257,7 @@ The class $\textsc{W[P]}$ contains all parameterized languages $(L, k)$ decidabl
 \end{defn}
 
 While generalizing $\FPT$, this class is clearly a constrained version of $\PARANP$.
-By a simulation argument (TODO: REF) it holds that $\textsc{W[P]} \subseteq \XP$.
+By a simulation argument \cite{FG06} it holds that $\textsc{W[P]} \subseteq \XP$.
 Many problems are contained in $\textsc{W[P]}$ since the nondeterminism can be used to generate a random string of logarithmic length, and then run a deterministic verifier which
 interprets substrings as indicies in the input.
 For example this applies to \textsc{p-INDSET} which can be solved by letting the random string correspond to indices of all the chosen vertices, i.e. $O(\log |G|)$ bits.
@@ -279,22 +283,22 @@ Using this statement we can define relative hardness though reductions:
 For $t \ge 1$: $W[t] = \left\{P : P <^{fpt} \textsc{p-WeightedCircuitSat} \right\}$ where the reduction is constrained to circuits $c$ s.t. $c \in C[t, d]$ for some $d$.
 \end{defn}
 
-For example it is relatively easy to construct circuits for \textsc{p-independent set} and \textsc{p-dominating set}, proving that they are contained in $W[1]$ and $W[2]$ respectively (TODO: REF Daniel).
+For example it is relatively easy to construct circuits for \textsc{p-independent set} and \textsc{p-dominating set}, proving that they are contained in $W[1]$ and $W[2]$ respectively \cite{FG06}.
 In the larger context the $W[t]$ family of classes form a hierarchy:
 
 \begin{thm}
 $\FPT \subseteq \textsc{W[1]} \subseteq \textsc{W[2]} \subseteq ...  \subseteq \textsc{W[P]} \subseteq \PARANP \cap \XP$
 \end{thm}
 
-(TODO: REF Flum) proves $W[t] \subseteq \textsc{W[P]}$.
-Similarly to the issue of $\FPT = \textsc{W[P]}$, it is unknown if all set inclusions are strict (TODO: REF).
+Flum and Grohe~\cite{FG06} prove that $W[t] \subseteq \textsc{W[P]}$.
+Similarly to the issue of $\FPT = \textsc{W[P]}$, it is unknown if all set inclusions are strict \cite{FG06}.
 
 \section{Hardness results and lower bounds}
 Given the established hierarchy of classes it would be useful to use these results in order to establish hardness of unknown problems.
-(TODO: Ref) proved that \textsc{p-independent set} and \textsc{p-dominating set} are \textsc{W[1]}-complete and \textsc{W[2]}-complete, respectively.
+Flum and Grohe~\cite{FG06} prove that \textsc{p-independent set} and \textsc{p-dominating set} are \textsc{W[1]}-complete and \textsc{W[2]}-complete, respectively.
 Hence a natural approach showing hardness of a parameterized language $P$ is for example to reduce $\textsc{p-independent set}$.
 
-Another hardness result is the fact that \textsc{\#k-path} is \emph{\#W[1]}-complete, even though $\textsc{k-path} \in \FPT$ (TODO: REF Flum-Grohe, 2004).
+Another hardness result is the fact that \textsc{\#k-path} is \emph{\#W[1]}-complete, even though $\textsc{k-path} \in \FPT$ \cite{FG04}.
 The paper introduces parameterized analysis in the context of counting problems.
 
 If it is not possible to find any hardness reductions it might be worth to consider if $P \in \FPT$.
@@ -307,9 +311,10 @@ A \emph{kernelization} of a parameterized language $(L, k)$ is a function $ker :
 \end{itemize}
 \end{defn}
 
-(TODO: REF Flum) proves that the existence of a kernelization of $P$ is equivalent to $P \in \FPT$, hence finding a kernelization is a suitable alternative when proving tractability.
+Flum and Grohe~\cite{FG06} prove that the existence of a kernelization of $P$ is equivalent to $P \in \FPT$, hence finding a kernelization is a suitable alternative when proving tractability.
 
 \section{Relation to approximation}
+\label{sec:approx}
 One way of approaching \NP-hard problems is to design approximation algorithms.
 The defining property is that they are guaranteed to find a solution within some time and cost bounds.
 
@@ -337,7 +342,7 @@ An optimization problem is in $\PTAS$ (i.e. there is a polynomial time approxima
 \end{defn}
 
 Hence $\PTAS$ allows running times such as $O(n^{\epsilon ^ \epsilon})$, i.e. $n$ having exponential dependencies on $\epsilon$.
-The well known approximation scheme by Arora (TODO: REF) to the bounded metric TSP is in $\PTAS$, with running time $O(n(\log n)^{O(\epsilon)})$.
+The approximation scheme by Arora~\cite{ARORA96} to the bounded metric TSP is in $\PTAS$, with running time $O(n(\log n)^{O(\epsilon)})$.
 A more refined view restricts this property:
 
 \begin{defn}
@@ -351,7 +356,7 @@ running time $(n + \frac{1}{\epsilon})^{O(1)}$.
 \end{defn}
 
 An example of an optimization problem in $\FPTAS$ is \textsc{RestrictedShortestPath} which optimizes the cost of a path through an acyclic graph.
-(TODO: ref Ergun) achieve a running time of $O(\frac{|V| |E|}{\epsilon})$.
+Ergun \emph{et al.}~\cite{ergun02} achieve a running time of $O(\frac{|V| |E|}{\epsilon})$.
 
 Based on the definition it is clear that the following relations hold:
 
@@ -359,43 +364,42 @@ Based on the definition it is clear that the following relations hold:
 $\FPTAS \subseteq \EPTAS \subseteq \PTAS$
 \end{thm}
 
-Optimization problems $\EPTAS$ are of special interest since all of these problem are also in $\FPT$, by the constructive argument given in (TODO REF FLUM).
-Such transformations use \emph{standard parameterizations} (TODO REF FLUM) which the solution cost as the parameterization.
+Optimization problems $\EPTAS$ are of special interest since all of these problem are also in $\FPT$, by a constructive argument \cite{FG06}.
+Such transformations are known as \emph{standard parameterizations} \cite{FG06} and use the solution cost as the parameterization.
 Another view of this result is that by finding lower bounds in parameterized complexity theory it is possible to conclude that optimization problems are not contained in $\EPTAS$.
 
 
 \chapter{Counting Thin Subgraphs}
-This chapter covers the theory of the second part of this project: how a certain class of subgraphs can be counted efficiently using a recent discovery (TODO: REF Kaski).
+This chapter covers the theory of the second part of this project: how a certain class of subgraphs can be counted efficiently using a recent discovery \cite{BHKK13}.
 
 \section{Introduction to counting patterns}
 Graph theory offers a range of problems typically defined over a graph $G = (V, E)$, which will be assumed to be undirected for now.
 One category of problems aim to identify and count structures in graphs.
-The graph isomorphism is well known to be hard in general but a polynomial algorithm is yet to be excluded (TODO: REF).
+The graph isomorphism is well known to be hard in general but a polynomial algorithm is yet to be excluded \cite{KOBLER94}.
 In addition there are problems focused on deciding and counting subgraph structures.
 Such a classical problem is deciding if $G$ has a Hamiltonian path.
 A generalization is the \textsc{k-path} problem which decides if there are any paths of length $k$ in $G$.
 The counting version \textsc{\#k-path} determines the number of k-paths in $G$, and the decision version reduces naturally.
 As noted in the section on parameterized complexity, it is known that \textsc{\#k-path} is \textsc{\#W[1]}-hard.
-Such a result implies that unless $P=NP$ there is no algorithm with running time $f(k)n^{O(1)}$, for some computable function $f$. % TODO: Need to clarify n/k here
+Such a result implies that unless $P=NP$ there is no algorithm with running time $f(k)n^{O(1)}$, for some computable function $f$.
 This motivates research into faster but still exponential time algorithms for \textsc{\#k-path}, but also generalizations of the problem.
-\textsc{\#k-path} has seen some recent success; (TODO REF BJÖRKLUND HAMILTIONIAN) introduced an algebraic approach with running time TODO.
+\textsc{k-path} is currently known to be solvable in time $O^*(2^k)$ \cite{W09}, using an algebraic approach.
 
 Generalizing the problem of counting paths to subgraphs maintains the same fundamental hardness result, but is still worth to consider in a non-naive way.
 Formally we are given an undirected pattern graph $P$ and an undirected host graph $H$, and we wish to count the number of occurrences of $P$ in $H$.
 Enumerating all subgraphs of $H$ isomorphic to $P$ yields a running time of $O(|H|^{|P|})$.
 
 A more efficient approach is to limit the type of graphs being considered and exploit this special structure when counting.
-This approach has previously resulted in \emph{meet-in-the-middle} algorithms, such as (TODO REF) which only considers pattern graphs having an independent set of size $\frac{|P|}{2}$,
+This approach has previously resulted in ``meet-in-the-middle'' algorithms, such as the result by Vassilevska and Williams~\cite{VW09} which only considers pattern graphs having an independent set of size $\frac{|P|}{2}$,
 with running time $O^*(|H|^{\frac{|P|}{2}})$.
-The defining property of this family of algorithms is that the running time contains a factor $|H|^{\frac{|P|}{2}}$.
-(TODO: REF FOMIN) established a similar result for thin pattern graphs, with running time $O^*(|H|^{\frac{|P|}{2} + 2p})$.
+The defining property of this family of algorithms is a factor $|H|^{\frac{|P|}{2}}$ in the time complexity.
+Fomin \emph{et al.}~\cite{FLRRS12} established a similar result for thin pattern graphs, with running time $O^*(|H|^{\frac{|P|}{2} + 2p})$.
 \emph{Thin subgraphs} have constrained pathwidth ($p$) which is a measure describing the width of a path decomposition of the graph.
 These properties are defined and discussed in the next section.
 
-The main contribution of the surveyed "Counting thin subgraphs via packings faster than meet-in-the-middle time" (TODO: REF) paper
-is a runtime bound improving upon the $\frac{|P|}{2}$ term, breaking the meet-in-the-middle barrier.
-Internally it uses some of the techniques from the (TODO: REF Fomin) paper, but in addition it introduces an algebraic technique
-permitting efficient aggregation of partial results on subgraph partitions.
+The main contribution of the surveyed "Counting thin subgraphs via packings faster than meet-in-the-middle time" paper \cite{BHKK13} is a runtime bound improving upon the $\frac{|P|}{2}$ term, breaking the ``meet-in-the-middle'' barrier.
+Internally it uses some of the techniques from the paper by Fomin \emph{et al.}~\cite{FLRRS12},
+but in addition it introduces an algebraic technique permitting efficient aggregation of partial results on subgraph partitions.
 The specific runtime achieved is $O^*(|H|^{0.4547|P| + 2p})$ for bounded pathwidth $p$ w.r.t to $|P|$.
 All of these steps are outlined in the following sections.
 
@@ -416,16 +420,16 @@ A rooted tree decomposition of an undirected graph $G = (V, E)$ is a triple $(T
 
 Correspondingly, a \emph{path decomposition} is a decomposition into paths.
 
-Tree decompositions, also known as join trees, have several applications outside of graph theory, such as AI (TODO: REF Carr).
+Tree decompositions, also known as join trees, have several applications outside of graph theory, such as AI \cite{carr00}.
 A central measure of complexity is the following:
 
 \begin{defn}
 The \emph{width} of a tree decomposition $(T, r, X)$ is $w(T) = max_{X_i \in X} |X_i| - 1$.
 \end{defn}
 Commonly the minimum width over all decompositions is used, which is known as \emph{treewidth}, or $w_t(T)$.
-\emph{Pathwidth}, $w_p(T)$, is defined similarly and it bounds the treewidth, i.e. $w_t(T) \leq w_p(T)$, for any decomposition (TODO: REF).
+\emph{Pathwidth}, $w_p(T)$, is defined similarly and it bounds the treewidth, i.e. $w_t(T) \leq w_p(T)$, for any decomposition \cite{kintali12}.
 
-Tree decompositions can be computed in linear time when the treewidth is bounded by some constant (TODO: REF).
+Tree decompositions can be computed in linear time when the treewidth is bounded by some constant \cite{bodlaender96}.
 In practice this does not imply feasibility since the algorithms can still be exponential in the treewidth, which is the case of the proof referenced above.
 
 In addition, tree decompositions can be transformed in order to allow more efficient traversals:
@@ -440,7 +444,8 @@ A \emph{nice tree decomposition} is a rooted tree decomposition $(T, r, X)$ sat
 \end{itemize}
 \end{defn}
 
-(TODO: REF) presents simple polynomial time algorithms for criteria two and three.
+
+Kintali and Munteanu \cite{kintali12} describe simple polynomial time algorithms for criteria two and three.
 
 % TODO: Decide if to include labeling
 % The nodes of such a decomposition are typically labeled based on the position within the tree:
@@ -479,13 +484,13 @@ i.e. $\left\{v_1, v_2\right\} \in E(P) \Leftrightarrow \left\{\phi(v_1), \phi(v_
 
 
 An \emph{injective homomorphism} has an injective map.
-(TODO: REF Diaz) introduced an algorithm for computing the number of homomorphisms $hom_{\phi}(P, H)$ in time $O^*(|H|^{|P|})$.
+D{\'{\i}}az~{\em et al.}~\cite{DST02} introduced an algorithm for computing the number of homomorphisms $hom_{\phi}(P, H)$ in time $O^*(|H|^{|P|})$.
 The paper uses the terminology \emph{colorings} and requires an existing nice tree decomposition of the pattern graph, which can be computed in polynomial time in the case of bounded treewidth.
 
 The number of isomorphic subgraphs can be evaluated by calculating the number of injective homomorphisms from $P$ onto subgraphs of $H$, divided by the number of automorphisms
-, i.e. $\frac{inj(P, H)}{aut(P)} = \frac{inj(P, H)}{inj(P, P)}$ (TODO: REF Fomin).
+, i.e. $\frac{inj(P, H)}{aut(P)} = \frac{inj(P, H)}{inj(P, P)}$ \cite{FLRRS12}.
 
-In order to retrieve partial results for the number of injective homomorphisms $inj_{\phi}(P, H)$ it is possible to utilize apply inclusion-exclusion, as in a theorem due to Fomin (TODO: Ref Fomin):
+In order to retrieve partial results for the number of injective homomorphisms $inj_{\phi}(P, H)$ it is possible to utilize apply inclusion-exclusion, as in a theorem due to Fomin \emph{et al.}~\cite{FLRRS12}:
 
 \begin{thm}
 \label{thm:fomin}
@@ -497,7 +502,7 @@ Given some $S \subseteq P$ and an injective homomorphism $\phi : S \rightarrow H
 This result can be used as a subroutine when counting the total number of injective homomorphism.
 
 \section{Thin subgraphs as weighted disjoint triples}
-Using the notions introduced up to now, it is possible to study the contributions made by (TODO: REF KASKI).
+Using the notions introduced up to now, it is possible to study the contributions made by Bj\"orklund \emph{et al.}~\cite{BHKK13}.
 The paper introduces the following triples:
 
 \begin{defn}
@@ -505,7 +510,7 @@ $\Delta(f, g, h) = \Sigma_{\substack{A, B, C \in S\\A \cap B = A \cap C = B \cap
 \end{defn}
 
 These are used to express counting subgraphs in terms of algebraic objects.
-Similarly to the final algorithm presented by (TODO: REF Fomin), (TODO: REF Kaski) uses a partition scheme which counts all injective isomorphisms in parts.
+Similarly to a counting algorithm presented by Fomin~\emph{et al.}~\cite{FLRRS12}, Bj\"orklund \emph{et al.}~\cite{BHKK13} use a partition scheme which counts all injective isomorphisms in parts.
 
 \begin{defn}
 A 5-partitioning of the pattern graph $P$ with bounded pathwidth $p$ is a collection of pairwise disjoint sets $L \cup S \cup M \cup T \cup R = V(P)$, such that:
@@ -536,17 +541,17 @@ Formally the following functions over subsets of the host graph are defined, fo
 \item $h_\phi(C)$: The number of injective homomorphisms mapping $P[R \cup T]$ onto $H[C \cup \phi(T)]$.
 \end{itemize}
 
-Hence the number of injective homomorphisms extending a candidate $\phi$ is $\Delta_\phi(f_\phi, g_\phi, h_\phi)$ (TODO: Ref Grohe).
+Hence the number of injective homomorphisms extending a candidate $\phi$ is $\Delta_\phi(f_\phi, g_\phi, h_\phi)$ \cite{BHKK13}.
 
 \section{Efficient weighted disjoint triples}
 In the previous section the problem of counting isomorphic subgraphs was expressed as evaluating weighted disjoint triples.
-The main contribution of the new result (Kaski) relates to how these can be efficiently evaluated, after all of the
+The main contribution of the new result \cite{BHKK13} relates to how these can be efficiently evaluated, after all of the
 injective homomorphisms on certain subgraphs have been calculated.
 In other words we would like to calculate $\Delta_\phi$ efficiently.
 
 The approach taken by the paper is to formulate the problem in terms of a linear equation system which can be constructed and solved within the runtime bound.
 Hence the first step is to formulate a set of indeterminates to solve for.
-Note that, for $q$-sized subsets $A,B,C$, it holds that $|A\oplus B\oplus C|\equiv |A|+|B|+|C|=3q\equiv q\pmod 2\,$ (TODO: REF), where $\oplus$ denotes symmetric difference.
+Note that, for $q$-sized subsets $A,B,C \subseteq U$, it holds that $|A\oplus B\oplus C|\equiv |A|+|B|+|C|=3q\equiv q\pmod 2\,$ \cite{BHKK13}, where $\oplus$ denotes symmetric difference.
 This implies that the symmetric difference is either odd or even, depending on $q$.
 It follows that there are a total of $\lfloor \frac{3q}{2} \rfloor$ indeterminates on the following form:
 
@@ -555,7 +560,7 @@ $x_j=x_j(f_\phi,g_\phi,h_\phi)=\sum_{\substack{A,B,C\in\binom{U}{q}\\|A\oplus B\
 f_{\phi}(A)g_{\phi}(B)h_{\phi}(C)\,.$
 \end{defn}
 
-Solving for $x_{3q}$ results in $\Delta_\phi$, since the size of the symmetric difference is maximized when all three subsets are disjoint (TODO: REF). 
+Solving for $x_{3q}$ results in $\Delta_\phi$, since the size of the symmetric difference is maximized when all three subsets are disjoint \cite{BHKK13}. 
 
 Given these indeterminates, the paper uses two different types of equations which combined together yield the final linear equation system.
 The first family of equations is known as \emph{basic}:
@@ -580,7 +585,7 @@ f_\phi(A)g_\phi(B)h_\phi(C)\,.
 \end{equation}
 \end{defn}
 
-Combined with coefficients from a \emph{Vandermonde matrix}, given by $v_{ij} = (n - 2j)^i$, (TODO: REF Kaski) proves that $\Sigma_j v_{ij}x_{j} = y_i$ holds.
+Combined with coefficients from a \emph{Vandermonde matrix}, given by $v_{ij} = (n - 2j)^i$, Bj\"orklund \emph{et al.}~\cite{BHKK13} prove that $\Sigma_j v_{ij}x_{j} = y_i$ holds.
 
 The second family of equations is the following:
 
@@ -607,7 +612,7 @@ Given a parameter $0 \leq \gamma \leq 1/2$ the paper now takes the following:
 \end{itemize}
 
 The parameter $\gamma$ is chosen in order to balance the contribution in running time from both of the families, which depends on the efficiency of evaluating certain matrix multiplications.
-Assuming efficient evaluation of square matrix multiplication and multiplication of $N^\alpha * N$ with an $N * N^\alpha$ matrix, this results in time complexity $O^*(n^{0.4547|P|})$ in order to construct the system (TODO: REF Kaski).
+Assuming efficient evaluation of square matrix multiplication and multiplication of $N^\alpha * N$ with an $N * N^\alpha$ matrix, this results in time complexity $O^*(n^{0.4547|P|})$ in order to construct the system \cite{BHKK13}.
 
 Following this, gaussian elimination is applied on the system in order to solve the resulting set of equations in polynomial time, and return $x_{3q}$ as $\Delta_\phi$.
 
@@ -616,7 +621,7 @@ Summing over all $\Delta_\phi$ and dividing by the number of automorphisms give
 Hence the final running time for counting thin subgraphs is $O^*(n^{0.4547|P| + 2p})$.
 
 \chapter{Implementation}
-This chapter covers an implementation of \emph{counting thin subgraphs} (TODO: REF Kaski).
+This chapter covers an implementation of \emph{counting thin subgraphs} \cite{BHKK13}.
 
 \section{General overview}
 TODO: Describe implementation, trade-offs, correctness verification.
@@ -629,6 +634,11 @@ statistical assurance in results, bottlenecks.
 TODO: analyze benchmarks
 
 \begin{thebibliography}{10}
+
+\bibitem{BHKK13}
+A.~{Bj{\"o}rklund}, P.~Kaski, and {\L}.~Kowalik.
+\newblock Counting thin subgraphs via packings faster than meet-in-the-middle time.
+\newblock {\em arXiv} preprint arXiv:1306.4111, 2013.
 
 \bibitem{FG06}
 J.~Flum, and M.~Grohe.
@@ -643,12 +653,22 @@ J.~Flum, and M.~Grohe.
 \bibitem{ARORA96}
 S.~Arora.
 \newblock Polynomial time approximation schemes for Euclidean TSP and other geometric problems.
-\newblock Foundations of Computer Science, 1996. Pro., 37th ann. sym. on (pp. 2-11). IEEE. (1996)
+\newblock Foundations of Computer Science, 1996. Pro., 37th ann. sym. on (pp. 2-11). IEEE. 1996.
 
-\bibitem{bjorklund13}
-A.~{Bj{\"o}rklund}, P.~Kaski, and {\L}.~Kowalik.
-\newblock Counting thin subgraphs via packings faster than meet-in-the-middle time.
-\newblock {\em arXiv} preprint arXiv:1306.4111, 2013.
+\bibitem{KOBLER94}
+J.~Köbler, U.~Schöning, and J.~Torán.
+\newblock The graph isomorphism problem: its structural complexity.
+\newblock Birkhauser Verlag. 1994.
+
+\bibitem{W09}
+R.~Williams.
+\newblock Finding Paths of Length $k$ in $O^*(2^k)$ Time.
+\newblock Inform. Process. Lett. 109(6) pp.~315--318, 2009.
+
+\bibitem{VW09}
+V.~Vassilevska and R.~Williams.
+\newblock Finding, minimizing, and counting weighted subgraphs.
+\newblock In M.~Mitzenmacher, editor, {\em STOC}, pages 455--464. ACM, 2009.
 
 \bibitem{DST02}
 J.~D{\'{\i}}az, M.~Serna, and D.~M. Thilikos.
