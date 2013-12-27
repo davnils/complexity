@@ -157,7 +157,7 @@ $\textsc{p-VERTEX-COVER} \in \FPT$
 \end{thm}
 
 \begin{proof}
-Algorithm \ref{fpt-vertex-cover} can be seen as a binary tree of height $k$ where each node performs a linear amount of work (in the number of edges), i.e. $\textsc{p-VERTEX-COVER} \in O(2^k |E(G)|)$.
+Algorithm \ref{fpt-vertex-cover} can be seen as a binary tree of height $k$ where each node performs a linear amount of work (in the number of edges), i.e. $\textsc{p-VERTEX-COVER}$ is decided in $O(2^k |E(G)|)$ time.
 It is based on the observation that deciding if a vertex cover of size $k$ exists can be expressed as a sequence of $k$ choices.
 This follows since a valid vertex cover must include at least one vertex for each edge, hence every step can consider covering either vertex of an edge and remove all covered edges.
 The algorithm succeeds only when the set of edges is empty (and has hence been covered), and will fail when edges remain and $k = 0$.
@@ -206,14 +206,23 @@ There is a notable connection between languages in $\FPT$ and the classical clas
 All slices of a language in $\FPT$ are in $\P$.
 \end{thm}
 
-By the contrapositive we have there is some slice $(L, k)_{l'} \in \NPC$, it follows that $(L, k) \not \in \FPT$, assuming $\P \not = \NP$.
+By the contrapositive we have that if there is some slice $(L, k)_{l'} \in \NPC$, it follows that $(L, k) \not \in \FPT$, assuming $\P \not = \NP$.
 An example of this is the fact that \lang{3-COLORABILITY} is \NP-hard, and hence under reasonable assumptions, it follows that $\lang{p-COLORABILITY} \not \in \FPT$.
 
 \section{Generalized classes}
 %TODO: This intro can be extended, for example with a formal definition of p-CLIQUE (probably should be)
 The class of fixed parameter tractable languages can be seen as examples of where effective algorithms have been found.
-There are however languages outside of this class; a concrete example of this is \lang{p-CLIQUE}, which will in the next section be shown to be outside of $\FPT$ under realistic complexity-theoretic assumptions.
-In the case of classical complexity theory $\P$ is typically seen as the class of tractable (non-probabilistically decidable) languages and generalizations include adding non-determinism.
+There are however languages outside of this class; a concrete example of this is independent set, which can be parameterized as follows ($\textsc{p-INDSET}$):
+
+\begin{itemize}
+\item Input: Graph $G$, number of vertices in independent set $s$
+\item Parameterization: $k((G, s)) = s$.
+\item Problem: Does $G$ have an independent set of size $\ge s$?.
+\end{itemize}
+
+This problem will in the next section be shown to be outside of $\FPT$ under realistic complexity-theoretic assumptions, motivating generalizations of $\FPT$.
+
+In the case of classical complexity theory, $\P$ is typically seen as the class of tractable (non-probabilistically decidable) languages and generalizations include adding non-determinism.
 A similar path is taken in parameterized complexity theory where the following class is somewhat similar to $\NP$, if $\P$ is compared to $\FPT$:
 
 \begin{defn}
@@ -221,7 +230,7 @@ $\PARANP$ is the set of parameterized languages decided by some algorithm runnin
 \end{defn}
 
 Naturally it holds that $\FPT \subseteq \PARANP$ since any deterministic algorithm (with equivalent time bound) can be evaluated by the corresponding NDTM.
-Similarly to $NP$-complete languages there are also complete languages for $\PARANP$.
+Similarly to $\NP$-complete languages there are also complete languages for $\PARANP$.
 These are characterized by the fact that if $(L, k) \in \PARANP$ s.t. $\exists l : (L, k)_l \in \NPC$ then $(L, k)$ is $\PARANP$-complete (TODO: Ref Flum).
 It is known that $\FPT = \PARANP$ iff $\P = \NP$ (TODO: REF Flum).
 
@@ -244,10 +253,10 @@ The class $\textsc{W[P]}$ contains all parameterized languages $(L, k)$ decidabl
 \end{defn}
 
 While generalizing $\FPT$, this class is clearly a constrained version of $\PARANP$.
-By a simulation argument (TODO: REF) it also holds that $\textsc{W[P]} \subseteq \XP$.
+By a simulation argument (TODO: REF) it holds that $\textsc{W[P]} \subseteq \XP$.
 Many problems are contained in $\textsc{W[P]}$ since the nondeterminism can be used to generate a random string of logarithmic length, and then run a deterministic verifier which
 interprets substrings as indicies in the input.
-For example this applies to \emph{p-INDEPENDENT-SET} which can be solved by letting the random string correspond to indices of all the chosen vertices, i.e. $O(\log |G|)$ bits.
+For example this applies to \textsc{p-INDSET} which can be solved by letting the random string correspond to indices of all the chosen vertices, i.e. $O(\log |G|)$ bits.
 
 Since there is still a huge gap between $\FPT$ and $\textsc{W[P]}$, it is of interest to study more fine-grained runtime.
 Consider decision circuits having OR, AND, and NOT nodes with unbounded fan-in.
@@ -459,10 +468,6 @@ As a concrete example, consider the graph in figure \ref{fig:arbitrary-graph} de
 \end{subfigure}
 \end{figure}
 
-%TODO: Replace with valid nice decomposition, tag with root, and also write treewidth explicitly
-\begin{figure}[here]
-\end{figure}
-
 \section{Counting homomorphisms}
 One approach to counting isomorphisms is to consider maps of $P$ onto subgraphs of $H$, and count the number of such injective maps.
 Formally we have the following:
@@ -531,7 +536,7 @@ Formally the following functions over subsets of the host graph are defined, fo
 \item $h_\phi(C)$: The number of injective homomorphisms mapping $P[R \cup T]$ onto $H[C \cup \phi(T)]$.
 \end{itemize}
 
-Hence the final number of injective homomorphisms, given a candidate $\phi$, is $\Delta_\phi(f_\phi, g_\phi, h_\phi)$.
+Hence the number of injective homomorphisms extending a candidate $\phi$ is $\Delta_\phi(f_\phi, g_\phi, h_\phi)$ (TODO: Ref Grohe).
 
 \section{Efficient weighted disjoint triples}
 In the previous section the problem of counting isomorphic subgraphs was expressed as evaluating weighted disjoint triples.
@@ -556,7 +561,7 @@ Given these indeterminates, the paper uses two different types of equations whic
 The first family of equations is known as \emph{basic}:
 
 \begin{defn}
-A basic equation for some $i$ is:
+A \emph{basic} equation for some $i$ is:
 
 \begin{equation}
 \label{eq:yi}
@@ -580,7 +585,7 @@ Combined with coefficients from a \emph{Vandermonde matrix}, given by $v_{ij} = 
 The second family of equations is the following:
 
 \begin{defn}
-A simple equation is the following, which holds for all indeterminates $x_j$:
+A \emph{simple} equation is the following, which holds for all indeterminates $x_j$:
 
 \begin{equation}
 \label{eq:xj-direct}
@@ -623,17 +628,59 @@ statistical assurance in results, bottlenecks.
 \section{Analysis}
 TODO: analyze benchmarks
 
-\chapter*{References}
+\begin{thebibliography}{10}
 
-Diaz,\\
-Fomin,\\
-Kaski,\\
-Björklund x 2-3,\\
-Flum-Grohe book, \\
-"An improved FPTAS for restricted shortest path" Ergun, Sinha, Zhang,\\
-"Computing Bounded Path Decompositions in Logspace" Kintali, Munteanu\\
-"A Linear-Time Algorithm for Finding Tree-Decompositions of Small Treewidth" Bodlaender\\
-Carr, Hamish, Jack Snoeyink, and Ulrike Axen. "Computing contour trees in all dimensions." Proceedings of the eleventh annual ACM-SIAM symposium on Discrete algorithms. Society for Industrial and Applied Mathematics, 2000.\\
-J. Flum and M. Grohe. The parameterized complexity of counting problems. SIAM J. Comput., 33(4):892–922, 2004.
+\bibitem{FG06}
+J.~Flum, and M.~Grohe.
+\newblock Parameterized complexity theory.  Vol. 3.
+\newblock Heidelberg: Springer, 2006.
+
+\bibitem{FG04}
+J.~Flum, and M.~Grohe.
+\newblock The parameterized complexity of counting problems.
+\newblock {\em SIAM J. Comput.}, 33(4):892--922, 2004.
+
+\bibitem{ARORA96}
+S.~Arora.
+\newblock Polynomial time approximation schemes for Euclidean TSP and other geometric problems.
+\newblock Foundations of Computer Science, 1996. Pro., 37th ann. sym. on (pp. 2-11). IEEE. (1996)
+
+\bibitem{bjorklund13}
+A.~{Bj{\"o}rklund}, P.~Kaski, and {\L}.~Kowalik.
+\newblock Counting thin subgraphs via packings faster than meet-in-the-middle time.
+\newblock {\em arXiv} preprint arXiv:1306.4111, 2013.
+
+\bibitem{DST02}
+J.~D{\'{\i}}az, M.~Serna, and D.~M. Thilikos.
+\newblock Counting {$H$}-colorings of partial {$k$}-trees.
+\newblock {\em Theoret. Comput. Sci.}, 281(1-2):291--309, 2002.
+\newblock Selected papers in honour of Maurice Nivat.
+
+\bibitem{FLRRS12}
+F.~V. Fomin, D.~Lokshtanov, V.~Raman, S.~Saurabh, and B.~V.~R. Rao.
+\newblock Faster algorithms for finding and counting subgraphs.
+\newblock {\em J. Comput. Syst. Sci.}, 78(3):698--706, 2012.
+
+\bibitem{bodlaender96}
+H. L.~Bodlaender.
+\newblock A linear-time algorithm for finding tree-decompositions of small treewidth.
+\newblock {\em SIAM Journal on computing}, 25(6), 1305-1317, 1996.
+
+\bibitem{ergun02}
+F.~Ergun, R.~Sinha, and L.~Zhang.
+\newblock An improved FPTAS for restricted shortest path.
+\newblock {\em Information Processing Letters}, 83(5), 287-291, 2002.
+
+\bibitem{kintali12}
+S.~Kintali, and S.~Munteanu.
+\newblock Computing Bounded Path Decompositions in Logspace.
+\newblock {\em Electronic Colloquium on Computational Complexity (ECCC)}, (Vol. 19, p. 126), 2012.
+
+\bibitem{carr00}
+H.~Carr, J.~Snoeyink, and U.~Axen.
+\newblock Computing contour trees in all dimensions.
+\newblock {\em Proceedings of the eleventh annual ACM-SIAM symposium on Discrete algorithms}, pp. 918-926. (2000).
+
+\end{thebibliography}
 
 \end{document}
