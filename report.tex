@@ -1,9 +1,7 @@
-% TODO: be careful about uniform classes, should be explicit and mentioned
-% TODO: add paragraph on kernelization (and other techniques?)
-% TODO: Make sure to integrate vertex cover param./example/reductions in the report
+\documentclass[a4paper,11pt]{report}
 
-\documentclass[a4paper,11pt,notitlepage]{report}
-
+\usepackage{algpseudocode}
+\usepackage{algorithm}
 \usepackage{amsthm}
 \usepackage{complexity}
 \usepackage{amsfonts}
@@ -25,39 +23,46 @@
 \newcommand{\PARANP}{\ComplexityFont{paraNP}}
 
 \selectlanguage{english}
-\title{report title}
-\author{David Nilsson, davnils@kth.se \\ Advanced Individual Course In Computer Science}
+\title{Report on parameterized complexity and subgraph counting}
+\author{David Nilsson, davnils@kth.se \\ Advanced Individual Course In Computer Science (DD2464)}
 
 \begin{document}
 
 \maketitle
-\clearpage
-
-\abstract{TODO}
-\selectlanguage{english}
+\abstract{
+  This report is part of the examination in the project course Advanced Individual Course In Computer Science.
+  It consists of two main parts: an introduction to parameterized complexity theory, and a description of a recent result related to counting thin subgraphs.
+  In addition to describing the counting algorithm there is also an introduction to counting structural properties in graph theory.
+  Finally an implementation of the counting algorithm is analyzed, including correctness verification and benchmarks.
+}
 
 \tableofcontents
 
 \chapter{Project Overview}
-This is an overview of this project, including goals and how the report is outlined.
+This is an overview of this project, including the underlying purpose and the contents of this report.
 
 \section{Purpose}
-The purpose of this project is divided into two parts.
-TODO the first part
-TODO the second part
+The advanced individual course in computer science (TODO: REF) course is a project course examined partly in writing - corresponding to this report.
+This project was divided into two parts; (1) gain an understanding of parameterized complexity, and (2) implement a recent result in graph theory.
+The purpose of the first part was to establish an understanding of how classical complexity theory generalizes, and gain working knowledge of how results are obtained.
+The second part is more practical and was included in order to improve the ability to read a paper and implement the results.
 
 \section{Method}
-TODO: Describe how this report fits into the bigger picture, what else has been
-done, and what the report contains.
+Parameterized complexity theory is described in the first part of this report and targets readers with some background in classical complexity.
+It gradually introduces common complexity classes and describes how to relate hardness between relevant problems.
+Following this, the second part involving counting thin subgraphs is introduced.
+This section describes how to implement a recent result by (TODO: REF Kaski).
+As part of this, a range of subresults and relevant measures in graph theory are explained.
+Finally an implementation of this algorithm is discussed in the last chapter, with benchmarks and a discussion on correctness verification.
 
 \chapter{Parameterized Complexity Theory}
-TODO: Brief intro to this chapter
+This chapter covers the first part of the project: parameterized complexity theory with existing results, complexity classes, and examples.
 
 \section{Motivation}
 In classical complexity theory we are given a very general view of computation.
 The asymptotic time and space complexity of problems is given as functions over the number of bits in the input.
 This results in the classification of many problems as \NP-hard (e.g. vertex cover, independent set), which is typically interpreted as the problem being difficult to solve.
-Does exluding polynomial time algorithms for problems in general make them infeasible in practice?
+Does excluding polynomial time algorithms for problems in general make them infeasible in practice?
 For certain problems this might certainly be true but there is no fundamental reason to which this would hold in general.
 Many problems have special cases that are easy to solve or approximation algorithms that are capable of finding decent solutions within polynomial time.
 For example there might exist a polynomial time algorithm solving all cases when an aspect of the problem is considered constant, e.g. the number of vertices in a vertex cover.
@@ -88,9 +93,9 @@ Naturally this notion does not extend trivially to parameterized problems since 
 This results in the following:
 
 \begin{defn}
-A reduction $R$ mapping strings between the two parameterized languages $(L, k)$ and $(L', k')$ satisfies:
+A (strongly uniform) reduction $R$ mapping strings between the two parameterized languages $(L, k)$ and $(L', k')$ satisfies:
 \begin{itemize}
-\item the reduction preserves membership, i.e $x \in L \Leftrightarrow R(x) \in L'$
+\item the reduction preserves membership, i.e. $x \in L \Leftrightarrow R(x) \in L'$
 \item $R(x)$ is computable in time $f(k(x)) |x|^{O(1)}$ for any $x \in L$, where $f$ is a computable function
 \item there is some computable function $f(x) : \mathbb{N} \rightarrow \mathbb{N}$ s.t. $\forall x \in \Sigma^* : k'(x) < f(k(x))$
 \end{itemize}
@@ -99,13 +104,13 @@ A reduction $R$ mapping strings between the two parameterized languages $(L, k)$
 Typically such a reduction is written as $L <^{fpt} L'$.
 The specific runtime bound is common within parameterized complexity and will later play a crucial part when defining fixed parameter tractability.
 
-The second constraint ensures that certain reductions are rejected as invalid reductions.
-An example of this is considering vertex cover, using the parameterization in TODO, and extending this result to other graph problems.
-Independent set is commonly related to vertex cover as having the size $|G| - |S|$ for a graph $G$ with vertex cover $S$ (TODO REF).
+The third constraint ensures that certain reductions are rejected as invalid reductions.
+An example of this is considering vertex cover, using the parameterization previously, and extending this result to other graph problems.
+Independent set is commonly related to vertex cover as having the size $|G| - |S|$ for a graph $G$ with vertex cover $S$.
 Does this imply that the decision version of independent set reduces to vertex cover under parameterized reductions, and hence also transferring hardness?
-%TODO: complete argument (pro-tip: it doesn't hold!)
+It does not, since the parameterization depends on $n$ and hence there is no function $f$ independent of $n$ which satisfies the last constraint.
 
-Furthermore, it is of interest to study if problems remain within some given set of languages when applied to some reduction $R$.
+Furthermore, it is of interest to study if problems remain within some given set of languages when applied to a reduction $R$.
 
 \begin{defn}
 The \emph{closure} of a set $C$ of languages is defined as $\left[ C \right] = \left\{ L' : L \in C : L <^{fpt} L'\right\}$.
@@ -125,7 +130,7 @@ Slices are used later on when relating parameterized complexity classes to class
 
 \section{Fixed parameter tractability}
 Given the formalized notion of parameterized languages it is of interest to determine relative hardness and form a natural class hierarchy.
-In classical complexity we have the notions of $\P$, $\NP$, and many others, but these two capture the essential relative difficuly.
+In classical complexity we have the notions of $\P$, $\NP$, and many others, but these two capture the essential relative difficulty.
 
 The first step is to define allowed runtime of problems considered being tractable.
 
@@ -140,7 +145,7 @@ Based on this definition we have a class of tractable problems:
 
 \begin{defn}
 %TODO: Verify this statement.
-The class $\FPT$ consists of all languages decided by some fpt-algorithm and is closed w.r.t fpt-reductions.
+The (strongly uniform) class $\FPT$ consists of all languages decided by some fpt-algorithm and is closed w.r.t fpt-reductions.
 \end{defn}
 
 As an example of this we have the following:
@@ -148,35 +153,49 @@ As an example of this we have the following:
 $\textsc{p-VERTEX-COVER} \in \FPT$
 \end{thm}
 
-Proof: the following algorithm decides if $G$ has a vertex cover of size at most $k$ in time $O(2^k |E(G)|)$.
-\begin{verbatim}
-has-vertex-cover(E, k):
-  if E = {}:
-    return true
-  if k == 0:
-    return false
-
-  pick some {v_1, v_2} in E
-  
-  E' = {}, E'' = {}
-  for e in E
-    if v_1 not in e:
-      E' = union(E', e)
-    if v_2 not in e:
-      E'' = union(E'', e)
-
-  if has-vertex-cover(E', k-1) or has-vertex-cover(E'', k-1)
-    return true
-
-  return false
-
-\end{verbatim}
-
-This algorithm can be seen as a binary tree of height $k$ where each node performs a linear amount of work (in the number of edges), reaching the target runtime.
+\begin{proof}
+Algorithm \ref{fpt-vertex-cover} can be seen as a binary tree of height $k$ where each node performs a linear amount of work (in the number of edges), i.e. $\textsc{p-VERTEX-COVER} \in O(2^k |E(G)|)$.
 It is based on the observation that deciding if a vertex cover of size $k$ exists can be expressed as a sequence of $k$ choices.
-Since a valid vertex cover must include at least one vertex for each edge, every step can consider covering either vertex of an edge, and remove all covered edges.
-The algorithm succeeds only when the set of edges is empty (and has hence been covered), and will fail when edges remain and $k = 0$. \qed
-\\
+This follows since a valid vertex cover must include at least one vertex for each edge, hence every step can consider covering either vertex of an edge and remove all covered edges.
+The algorithm succeeds only when the set of edges is empty (and has hence been covered), and will fail when edges remain and $k = 0$.
+\end{proof}
+
+\begin{algorithm}
+\begin{algorithmic}
+\caption{Algorithm deciding vertex cover of size at most $k$}
+\label{fpt-vertex-cover}
+\Procedure{HasVertexCover}{$E,k$}\Comment{Can the edge set $E$ be covered using at most $k$ vertices?}
+\If {$E = \emptyset $}
+    \Return \texttt{True}
+\ElsIf {$k = 0$}
+    \Return \texttt{False}
+\EndIf
+
+\State $\left\{v_1, v_2\right\} \gets \texttt{Some edge in } E$
+
+\State $E'\gets \emptyset$
+\State $E''\gets \emptyset$
+
+\ForAll{$e \in E$} 
+  \If {$v_1 \not \in e $}
+      \State $E'\gets \left\{e\right\}\cup E'$
+  \EndIf
+  \If {$v_2 \not \in e $}
+      \State $E''\gets \left\{e\right\}\cup E''$
+  \EndIf
+\EndFor
+
+\If {\Call{HasVertexCover}{$E', k - 1$}}
+    \Return \texttt{True}
+\ElsIf {\Call{HasVertexCover}{$E'', k - 1$}}
+    \Return \texttt{True}
+\Else {}
+    \Return \texttt{False}
+\EndIf
+
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
 
 There is a notable connection between languages in $\FPT$ and the classical class \P:
 
@@ -184,14 +203,14 @@ There is a notable connection between languages in $\FPT$ and the classical clas
 All slices of a language in $\FPT$ are in $\P$.
 \end{thm}
 
-By the contrapositive we have there is some slice $(L, k)_{l'} \not \in \P$, it follows that $(L, k) \not \in \FPT$, assuming $\P \not = \NP$.
+By the contrapositive we have there is some slice $(L, k)_{l'} \in \NPC$, it follows that $(L, k) \not \in \FPT$, assuming $\P \not = \NP$.
 An example of this is the fact that \lang{3-COLORABILITY} is \NP-hard, and hence under reasonable assumptions, it follows that $\lang{p-COLORABILITY} \not \in \FPT$.
 
 \section{Generalized classes}
 %TODO: This intro can be extended, for example with a formal definition of p-CLIQUE (probably should be)
 The class of fixed parameter tractable languages can be seen as examples of where effective algorithms have been found.
 There are however languages outside of this class; a concrete example of this is \lang{p-CLIQUE}, which will in the next section be shown to be outside of $\FPT$ under realistic complexity-theoretic assumptions.
-In the case of classical complexity theory $\P$ is typically seen as the class of tractable (non-probabalistically decidable) languages and generalizations include adding non-determinism.
+In the case of classical complexity theory $\P$ is typically seen as the class of tractable (non-probabilistically decidable) languages and generalizations include adding non-determinism.
 A similar path is taken in parameterized complexity theory where the following class is somewhat similar to $\NP$, if $\P$ is compared to $\FPT$:
 
 \begin{defn}
@@ -199,11 +218,11 @@ $\PARANP$ is the set of parameterized languages decided by some algorithm runnin
 \end{defn}
 
 Naturally it holds that $\FPT \subseteq \PARANP$ since any deterministic algorithm (with equivalent time bound) can be evaluated by the corresponding NDTM.
-Similarly to $NP$-complete languages there also complete languages for $\PARANP$.
-These are characterized by the fact that if $(L, k) \in \PARANP$ s.t. $\exists l : (L, k)_l \in \NPC$ then $(L, k)$ is $\PARANP$-complete (TODO: Ref flum).
+Similarly to $NP$-complete languages there are also complete languages for $\PARANP$.
+These are characterized by the fact that if $(L, k) \in \PARANP$ s.t. $\exists l : (L, k)_l \in \NPC$ then $(L, k)$ is $\PARANP$-complete (TODO: Ref Flum).
 It is known that $\FPT = \PARANP$ iff $\P = \NP$ (TODO: REF Flum).
 
-Another generalization is allowing more running time in the deterministic model:
+Another generalization is allowing more running time in the deterministic setting:
 
 \begin{defn}
 (uniform) $\XP$ consists of all parameterized languages $(L, k)$ decided by an algorithm in time
@@ -213,23 +232,79 @@ $x^{f(k(x))} + f(k(x))$, for some computable function $f$.
 %TODO: Maybe add argument surrounding EXPTIME DTM and the following result (should probably be done as an indenpendent arugment)?
 
 Interestingly the containment $\FPT \subset \XP$ is proper (TODO: Ref Flum).
-
 In conclusion we have that $\FPT \subseteq \PARANP \cap \XP$.
 
 \section{Intermediate classes}
-TODO: W[P], W-hierarchy (circuit definition), relate to existing classes
+
+\begin{defn}
+The class $\textsc{W[P]}$ contains all parameterized languages $(L, k)$ decidable by a NTDM using at most $f(k(x)) \log |x| $ non-deterministic time steps, for some computable function $f$.
+\end{defn}
+
+While generalizing $\FPT$, this class is clearly a constrained version of $\PARANP$.
+By a simulation argument (TODO: REF) it also holds that $\textsc{W[P]} \subseteq \XP$.
+Many problems are contained in $\textsc{W[P]}$ since the nondeterminism can be used to generate a random string of logarithmic length, and then run a deterministic verifier which
+interprets substrings as indicies in the input.
+For example this applies to \emph{p-INDEPENDENT-SET} which can be solved by letting the random string correspond to indices of all the chosen vertices, i.e. $O(\log |G|)$ bits.
+
+Since there is still a huge gap between $\FPT$ and $\textsc{W[P]}$, it is of interest to study more fine-grained runtime.
+Consider decision circuits having OR, AND, and NOT nodes with unbounded fan-in.
+Such circuits can be seen as DAGs where the input vector propagates downwards to the single output node.
+
+\begin{defn}
+The set $C[t, d]$ contains all decision circuits having input-output paths $P$ of length at most $d$, with $P$ having at most $t$ nodes of input-degree $\ge 2$.
+\end{defn}
+
+In addition we define a parameterized problem \textsc{p-WeightedCircuitSat} as follows:
+\begin{itemize}
+\item Input: Decision circuit $C$, binary weight $w$
+\item Parameterization: $k((C, w)) = w$.
+\item Problem: Is $C$ satisfiable with some input string of binary weight $w$?
+\end{itemize}
+
+Using this statement we can define relative hardness though reductions:
+
+\begin{defn}
+For $t \ge 1$: $W[t] = \left\{P : P <^{fpt} \textsc{p-WeightedCircuitSat} \right\}$ where the reduction is constrained to circuits $c$ s.t. $c \in C[t, d]$ for some $d$.
+\end{defn}
+
+For example it is relatively easy to construct circuits for \textsc{p-independent set} and \textsc{p-dominating set}, proving that they are contained in $W[1]$ and $W[2]$ respectively (TODO: REF Daniel).
+In the larger context the $W[t]$ family of classes form a hierarchy:
+
+\begin{thm}
+$\FPT \subseteq \textsc{W[1]} \subseteq \textsc{W[2]} \subseteq ...  \subseteq \textsc{W[P]} \subseteq \PARANP \cap \XP$
+\end{thm}
+
+(TODO: REF Flum) proves $W[t] \subseteq \textsc{W[P]}$.
+Similarly to the issue of $\FPT = \textsc{W[P]}$, it is unknown if all set inclusions are strict (TODO: REF).
 
 \section{Hardness results and lower bounds}
-TODO: why? examples using p-CLIQUE, describe K-path result
+Given the established hierarchy of classes it would be useful to use these results in order to establish hardness of unknown problems.
+(TODO: Ref) proved that \textsc{p-independent set} and \textsc{p-dominating set} are \textsc{W[1]}-complete and \textsc{W[2]}-complete, respectively.
+Hence a natural approach showing hardness of a parameterized language $P$ is for example to reduce $\textsc{p-independent set}$.
+
+Another hardness result is the fact that \textsc{\#k-path} is \emph{\#W[1]}-complete, even though $\textsc{k-path} \in \FPT$ (TODO: REF Flum-Grohe, 2004).
+The paper introduces parameterized analysis in the context of counting problems.
+
+If it is not possible to find any hardness reductions it might be worth to consider if $P \in \FPT$.
+
+\begin{defn}
+A \emph{kernelization} of a parameterized language $(L, k)$ is a function $ker : \Sigma^* \rightarrow \Sigma^*$ satisfying:
+\begin{itemize}
+\item $x \in L \Leftrightarrow ker(x) \in L$.
+\item For $x \in L$ it holds that $|ker(x)| \leq f(|x|)$, for some computable function $f$.
+\end{itemize}
+\end{defn}
+
+(TODO: REF Flum) proves that the existence of a kernelization of $P$ is equivalent to $P \in \FPT$, hence finding a kernelization is a suitable alternative when proving tractability.
 
 \section{Relation to approximation}
-One way of approaching \NP-hard problems is to design appriximation algorithms.
+One way of approaching \NP-hard problems is to design approximation algorithms.
 The defining property is that they are guaranteed to find a solution within some time and cost bounds.
 
 An optimization problem $O$ is typically stated as a triplet $O = (S, cost_f(x), opt_f(x))$,
 where the cost and opt functions return the optimized cost and optimum respectively for some input $x$, and $S$ is the set of all solutions.
 
-There are different classes of approximation but a central measure of optimaliity is the following:
+There are different classes of approximation but a central measure of optimality is the following:
 
 \begin{defn}
 The approximation ratio of an optimization problem $O = (S, cost_f(x), opt_f(x))$ with respect to an input $x$ is defined as:
@@ -273,12 +348,12 @@ $\FPTAS \subseteq \EPTAS \subseteq \PTAS$
 \end{thm}
 
 Optimization problems $\EPTAS$ are of special interest since all of these problem are also in $\FPT$, by the constructive argument given in (TODO REF FLUM).
-Such transformations use \emph{standard parameterizations} (TODO REF FLUM) which take a goal cost as the parameterization.
+Such transformations use \emph{standard parameterizations} (TODO REF FLUM) which the solution cost as the parameterization.
 Another view of this result is that by finding lower bounds in parameterized complexity theory it is possible to conclude that optimization problems are not contained in $\EPTAS$.
 
 
 \chapter{Counting Thin Subgraphs}
-TODO: Brief intro to this chapter
+This chapter covers the theory of the second part of this project: how a certain class of subgraphs can be counted efficiently using a recent discovery (TODO: REF Kaski).
 
 \section{Introduction to counting patterns}
 Graph theory offers a range of problems typically defined over a graph $G = (V, E)$, which will be assumed to be undirected for now.
@@ -308,7 +383,7 @@ These properties are defined and discussed in the next section.
 The main contribution of the surveyed "Counting thin subgraphs via packings faster than meet-in-the-middle time" (TODO: REF) paper
 is a runtime bound improving upon the $\frac{|P|}{2}$ term, breaking the meet-in-the-middle barrier.
 Internally it uses some of the techniques from the (TODO: REF Fomin) paper, but in addition it introduces an algebraic technique
-permitting efficient aggregation of partial results on subgraphs partitions.
+permitting efficient aggregation of partial results on subgraph partitions.
 The specific runtime achieved is $O^*(|H|^{0.4547|P| + 2p})$ for bounded pathwidth $p$ w.r.t to $|P|$.
 All of these steps are outlined in the following sections.
 
@@ -333,13 +408,13 @@ Tree decompositions, also known as join trees, have several applications outside
 A central measure of complexity is the following:
 
 \begin{defn}
-The \emph{treewidth} of a tree decomposition $(T, r, X)$ is $w_t(T) = max_{X_i \in X} \left\{ |X_i| \right\} - 1$.
+The \emph{width} of a tree decomposition $(T, r, X)$ is $w(T) = max_{X_i \in X} \left\{ |X_i| \right\} - 1$.
 \end{defn}
-
-\emph{Pathwidth} $w_p(T)$ is defined similarly and it bounds the treewidth, i.e. $w_t(T) \leq w_p(T)$ for any decomposition (TODO: REF).
+Commonly the minimum width over all decompositions is used, which is known as \emph{treewidth}, or $w_t(T)$.
+\emph{Pathwidth} $w_p(T)$ is defined similarly and it bounds the treewidth, i.e. $w_t(T) \leq w_p(T)$, for any decomposition (TODO: REF).
 
 Tree decompositions can be computed in linear time when the treewidth is bounded by some constant (TODO: REF).
-In practice this does not imply feasibility since the algorithms can still be exponential in treewidth, which is the case of the proof mentioned above.
+In practice this does not imply feasibility since the algorithms can still be exponential in treewidth, which is the case of the proof referenced above.
 
 In addition, tree decompositions can be transformed in order to allow more efficient traversals:
 
@@ -353,7 +428,7 @@ A \emph{nice tree decomposition} is a rooted tree decomposition $(T, r, X)$ sat
 \end{itemize}
 \end{defn}
 
-(TODO: REF) presents simple polynomial time algorithms for critierias two and three.
+(TODO: REF) presents a simple polynomial time algorithms for criteria two and three.
 
 % TODO: Decide if to include labeling
 % The nodes of such a decomposition are typically labeled based on the position within the tree:
@@ -368,20 +443,20 @@ As a concrete example, consider the graph below decomposed into a nice tree deco
 \begin{figure}[here]
 \centering
 \includegraphics[width=6cm]{images/input_graph.png} 
-\caption[todo]{todo}
+\caption[Graph]{Input graph}
 \label{fig:arbitrary-graph}
+\centering
+\includegraphics[width=6cm]{images/nice_tree_decomp.png} 
+\caption[Decomposition]{Tree decomposition of graph in figure \ref{fig:arbitrary-graph} (TBD)}
+\label{fig:decomp-graph}
 \end{figure}
 
 %TODO: Replace with valid nice decomposition, tag with root, and also write treewidth explicitly
 \begin{figure}[here]
-\centering
-\includegraphics[width=12cm]{images/nice_tree_decomp.png} 
-\caption[todo]{todo}
-\label{fig:decomp-graph}
 \end{figure}
 
 \section{Counting injective homomorphisms}
-As mentioned when defining the naive algorithm for countings ismorphisms, it is possible to consider maps of $P$ onto $H$, and count the number of unique such maps.
+As mentioned when defining the naive algorithm for counting isomorphisms, it is possible to consider maps of $P$ onto $H$, and count the number of unique such maps.
 More formally we have the following:
 
 \begin{defn}
@@ -393,7 +468,7 @@ i.e. $\left\{v_1, v_2\right\} \in E(P) \Leftrightarrow \left\{\phi(v_1), \phi(v_
 An \emph{injective homomorphism} has an injective map.
 %TODO: Verify runtime
 %TODO: Check usage of subscript (existing homo.)
-(TODO: REF Diaz) introduced an algorithm for computing the number of homorphisms $hom_{\phi}(P, H)$ in time $O^*(|H|^|P|)$.
+(TODO: REF Diaz) introduced an algorithm for computing the number of homomorphisms $hom_{\phi}(P, H)$ in time $O^*(|H|^{|P|})$.
 The paper uses the terminology \emph{colorings} and requires an existing nice tree decomposition of the pattern graph, which can be computed in polynomial time in the case of bounded treewidth.
 
 The number of isomorphic subgraphs can be evaluated by calculating the number of injective homomorphisms from $P$ to $H$, and dividing by the number of automorphisms
@@ -408,7 +483,7 @@ Given an injective homomorphism $\phi : P \rightarrow H$ and $S \subseteq P$ the
 
 %TODO: Add description of the Fomin proof and how it uses hom() in Diaz
 
-Hence this result can be used as a subroutine when counting the total number of injective homormophisms.
+Hence this result can be used as a subroutine when counting the total number of injective homomorphisms.
 
 \section{Thin subgraphs as weighted disjoint triples}
 Using the notions introduced up to now, it is possible to study the contributions made by (TODO: REF KASKI).
@@ -420,7 +495,7 @@ $\Delta(f, g, h) = \Sigma_{A, B, C \in S ; A \cap B = A \cap C = B \cap C = \emp
 Similarly to the final algorithm presented by (TODO: REF Fomin), (TODO: REF kasi) uses a partition scheme which counts all injective isomorphisms in parts.
 
 \begin{defn}
-A 3-partitioning of the pattern graph $P$ of pathwidth $p$ is a collection of pairwise disjoint sets $L \cup S \cup M \cup T \cup R = V(P)$, such that:
+A 3-partitioning of the pattern graph $P$ with bounded pathwidth $p$ is a collection of pairwise disjoint sets $L \cup S \cup M \cup T \cup R = V(P)$, such that:
 \begin{itemize}
 \item Every edge $e \in E(P)$ connects vertices between at most two consecutive sets in the ordering $L, S, M, T, R$.
 \item The separators sets have size bounded in the pathwidth, i.e. $|S|, |T| \leq p$
@@ -428,18 +503,18 @@ A 3-partitioning of the pattern graph $P$ of pathwidth $p$ is a collection of 
 \end{itemize}
 \end{defn}
 
-Now consider creating a partial injective homormophism $\phi$ mappping $S$ and $T$ onto $H$, as visualized in the following figure
-, where the $A,B,C \subseteq (H \setminus \phi(S) \setminus \phi(T))$ :
+Now consider creating a partial injective homomorphism $\phi$ mapping $S$ and $T$ onto $H$, as visualized in the following figure,
+where $A,B,C \subseteq (H \setminus \phi(S) \setminus \phi(T))$ :
 
 \begin{figure}[here]
 \centering
 \includegraphics[width=10cm]{images/sketch_homo.png} 
-\caption[todo]{todo}
+\caption[Mapping]{Mapping of pattern graph onto host graph given an injective homomorphism (TODO: vectorize)}
 \label{fig:homo-viz}
 \end{figure}
 
-Enumerating all such possible $O(|H|^{2p})$ injective homomorhpisms mapping $S$ and $T$ to the host graph,
- all possible extensions to $\phi$ can be considered using theorem TODO.
+Enumerating all such possible $O(|H|^{2p})$ injective homomorphisms mapping $S$ and $T$ to the host graph,
+all possible extensions to $\phi$ can be considered using theorem TODO.
 More formally the following functions over the subsets of the host graph are defined, for each candidate $\phi$:
 
 \begin{itemize}
@@ -448,22 +523,22 @@ More formally the following functions over the subsets of the host graph are de
 \item $h_\phi(C)$: The number of injective homomorphisms mapping $P[R \cup T]$ onto $H[C \cup \phi(T)]$.
 \end{itemize}
 
-Hence the final number of injective homormorphisms, given a candidate $\phi$, is $\Delta_\phi(f_\phi, g_\phi, h_\phi)$.
+Hence the final number of injective homomorphisms, given a candidate $\phi$, is $\Delta_\phi(f_\phi, g_\phi, h_\phi)$.
 Summing over all $\Delta_\phi$ and dividing by the number of automorphisms gives the final number of isomorphic subgraphs.
 
 \section{Efficient weighted disjoint triples}
-TODO: Kaski construction where linear system is constructed for the triples.
+TODO: this section will describe how weighted disjoint triples can be efficiently evaluated using a lineary system of equations
 
 
 \chapter{Implementation}
-TODO: Brief intro to this chapter
+This chapter covers an implementation of \emph{counting thin subgraphs} (TODO: REF Kaski).
 
 \section{General overview}
 TODO: Describe implementation, trade-offs, correctness verification.
 
 \section{Benchmarks}
 TODO: Describe test data (generation and classes), scaling performance,
-statistical assurance in resulsts, bottlenecks.
+statistical assurance in results, bottlenecks.
 
 \section{Analysis}
 TODO: analyze benchmarks
@@ -474,10 +549,11 @@ Diaz,\\
 Fomin,\\
 Kaski,\\
 Björklund x 2-3,\\
-Flum-Grohe, \\
+Flum-Grohe book, \\
 "An improved FPTAS for restricted shortest path" Ergun, Sinha, Zhang,\\
 "Computing Bounded Path Decompositions in Logspace" Kintali, Munteanu\\
 "A Linear-Time Algorithm for Finding Tree-Decompositions of Small Treewidth" Bodlaender\\
 Carr, Hamish, Jack Snoeyink, and Ulrike Axen. "Computing contour trees in all dimensions." Proceedings of the eleventh annual ACM-SIAM symposium on Discrete algorithms. Society for Industrial and Applied Mathematics, 2000.\\
+J. Flum and M. Grohe. The parameterized complexity of counting problems. SIAM J. Comput., 33(4):892–922, 2004.
 
 \end{document}
