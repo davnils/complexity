@@ -78,7 +78,7 @@ For example there might exist a polynomial time algorithm solving all cases when
 Parameterized complexity theory aims to provide a theoretical foundation for asymptotic analysis on a more fine-grained scale.
 This is achieved by not only considering inputs as a binary string but placing it into a context of the problem being solved.
 All of this is achieved while still maintaining classical complexity classes and focusing on existing results.
-This alternative view of complexity theory also forms natural ties with approximation algorithms, something which is studied in section \ref{sec:approx}.
+This alternative view of complexity theory also forms natural ties with approximation algorithms, which is studied in section \ref{sec:approx}.
 
 \section{Parameterized decision problems}
 The first step in developing a more fine-grained theory is to describe how problems are expressed.
@@ -112,11 +112,11 @@ A (strongly uniform) reduction $R$ mapping strings between the two parameterized
 Typically such a reduction is written as $L <^{fpt} L'$.
 The specific runtime bound is common within parameterized complexity and will later play a crucial part when defining fixed parameter tractability.
 
-The third constraint ensures that certain reductions are rejected as invalid reductions.
-An example of this is considering vertex cover, using the parameterization previously, and extending this result to other graph problems.
+The third constraint ensures that certain reductions are rejected as invalid.
+An example of this is considering vertex cover, using the parameterization given previously, and extending this result to other graph problems.
 Independent set is commonly related to vertex cover as having the size $|G| - |S|$ for a graph $G$ with vertex cover $S$.
-Does this imply that the decision version of independent set reduces to vertex cover under parameterized reductions, and hence also transferring hardness?
-It does not, since the parameterization depends on $n$ and hence there is no function $f$ independent of $n$ which satisfies the last constraint.
+Does this imply that the decision version of independent set reduces to vertex cover under parameterized reductions, and hence also transferring tractability?
+It does not, since the parameterization depends on $|G|$ and there is no function $f$ of $k(x)$ that bounds $k'(x)$ (the number of vertices in the vertex cover).
 
 Furthermore, it is of interest to study if problems remain within some given set of languages when applied to a reduction $R$.
 
@@ -147,13 +147,13 @@ A \emph{fpt-algorithm} $A(x, k)$ runs at most $f(k(x)) |x|^{O(1)}$ steps, for so
 \end{defn}
 
 This definition aims to decide which problems are feasible when solving instances having the parameterization remain constant.
-In practice this might correspond to checking if some graph property applies to graphs of different sizes, and having a fpt-algorithm
-would correspond to reasonable scaling in running times.
+In practice this might correspond to checking if some graph property applies to graphs of different sizes, and having an fpt-algorithm
+would correspond to reasonable scaling behaviour in running time.
 Based on this definition we have a class of tractable problems:
 
 \begin{defn}
 %TODO: Verify this statement.
-The (strongly uniform) class $\FPT$ consists of all languages decided by some fpt-algorithm and is closed w.r.t fpt-reductions.
+The (strongly uniform) class $\FPT$ consists of all parameterized languages decided by some fpt-algorithm and is closed w.r.t fpt-reductions.
 \end{defn}
 
 As an example of this we have the following:
@@ -283,7 +283,10 @@ Using this statement we can define relative hardness though reductions:
 For $t \ge 1$: $W[t] = \left\{P : P <^{fpt} \textsc{p-WeightedCircuitSat} \right\}$ where the reduction is constrained to circuits $c$ s.t. $c \in C[t, d]$ for some $d$.
 \end{defn}
 
-For example it is relatively easy to construct circuits for \textsc{p-independent set} and \textsc{p-dominating set}, proving that they are contained in $W[1]$ and $W[2]$ respectively \cite{FG06}.
+%For example \textsc{p-independent set} can be solved using the following circuit.
+%TODO
+%Combined with blargh.
+
 In the larger context the $W[t]$ family of classes form a hierarchy:
 
 \begin{thm}
@@ -295,7 +298,7 @@ Similarly to the issue of $\FPT = \textsc{W[P]}$, it is unknown if all set inclu
 
 \section{Hardness results and lower bounds}
 Given the established hierarchy of classes it would be useful to use these results in order to establish hardness of unknown problems.
-Flum and Grohe~\cite{FG06} prove that \textsc{p-independent set} and \textsc{p-dominating set} are \textsc{W[1]}-complete and \textsc{W[2]}-complete, respectively.
+Flum and Grohe~\cite{FG06} prove that \textsc{p-independent set} and \textsc{p-dominating set} are \textsc{W[1]}-complete and \textsc{W[2]}-complete.
 Hence a natural approach showing hardness of a parameterized language $P$ is for example to reduce $\textsc{p-independent set}$.
 
 Another hardness result is the fact that \textsc{\#k-path} is \emph{\#W[1]}-complete, even though $\textsc{k-path} \in \FPT$ \cite{FG04}.
@@ -307,11 +310,15 @@ If it is not possible to find any hardness reductions it might be worth to consi
 A \emph{kernelization} of a parameterized language $(L, k)$ is a function $ker : \Sigma^* \rightarrow \Sigma^*$ satisfying:
 \begin{itemize}
 \item $x \in L \Leftrightarrow ker(x) \in L$.
-\item For $x \in L$ it holds that $|ker(x)| \leq f(|x|)$, for some computable function $f$.
+\item For $x \in L$ it holds that $|ker(x)| \leq f(k(x))$, for some computable function $f$.
 \end{itemize}
 \end{defn}
 
 Flum and Grohe~\cite{FG06} prove that the existence of a kernelization of $P$ is equivalent to $P \in \FPT$, hence finding a kernelization is a suitable alternative when proving tractability.
+
+Even though the existence of a kernel implies tractability there can still be constraints concercing efficiency.
+An example is $\textsc{p-VERTEX-COVER}$ which has a kernelization producing instances with at most $O(k^2)$ edges, which is believed to be tight, since a bound of $O(k^2 - \epsilon)$ for $\epsilon > 0$
+would imply $\coNP \subseteq \NP /Poly$ \cite{DELL10}.
 
 \section{Relation to approximation}
 \label{sec:approx}
@@ -506,6 +513,7 @@ Using the notions introduced up to now, it is possible to study the contribution
 The paper introduces the following triples:
 
 \begin{defn}
+\label{def:delta}
 $\Delta(f, g, h) = \Sigma_{\substack{A, B, C \in S\\A \cap B = A \cap C = B \cap C = \emptyset}} f(A)g(B)h(C)$
 \end{defn}
 
@@ -516,17 +524,19 @@ Similarly to a counting algorithm presented by Fomin~\emph{et al.}~\cite{FLRRS12
 A 5-partitioning of the pattern graph $P$ with bounded pathwidth $p$ is a collection of pairwise disjoint sets $L \cup S \cup M \cup T \cup R = V(P)$, such that:
 \begin{itemize}
 \item Every edge $e \in E(P)$ connects vertices between at most two consecutive sets in the ordering $L, S, M, T, R$.
-\item The separators sets $S$ and $T$ have size bounded in the pathwidth, i.e. $|S|, |T| \leq p$
+\item The separator sets $S$ and $T$ have size bounded in the pathwidth, i.e. $|S|, |T| \leq p$
 \item All remaining sets have $|L|, |M|, |R| \leq \frac{|P|}{3}$
 \end{itemize}
 \end{defn}
+
+It can be constructed in polynomial time \cite{BHKK13}.
 
 Now consider creating an injective homomorphism $\phi$ mapping $S$ and $T$ onto $H$, as visualized in the figure \ref{fig:homo-viz},
 where $A,B,C \subseteq (H \setminus \phi(S) \setminus \phi(T))$.
 
 \begin{figure}[here]
 \centering
-\includegraphics[width=10cm]{images/sketch_homo.png} 
+\includegraphics[width=10cm]{images/sketch_homo.jpg} 
 \caption[Mapping]{Mapping of pattern graph onto host graph given an injective homomorphism $\phi$ (TODO: vectorize)}
 \label{fig:homo-viz}
 \end{figure}
@@ -621,10 +631,17 @@ Summing over all $\Delta_\phi$ and dividing by the number of automorphisms give
 Hence the final running time for counting thin subgraphs is $O^*(n^{0.4547|P| + 2p})$.
 
 \chapter{Implementation}
-This chapter covers an implementation of \emph{counting thin subgraphs} \cite{BHKK13}.
+This chapter describes an implementation of \emph{counting thin subgraphs} \cite{BHKK13}.
+The implementation is available as a git repository \footnote{https://github.com/davnils/count-subgraphs}.
 
 \section{General overview}
-TODO: Describe implementation, trade-offs, correctness verification.
+Counting of thin subgraphs has been implemented as presented in the paper \cite{BHKK13}.
+Internally it generates tree decompositions using the routine \emph{create\_join\_tree} available in the library dlib 18.5 \footnote{http://www.dlib.net}
+Nice tree decompositions \cite{kintali12}, counting homomorphisms \cite{DST02}, and counting injective homomorphisms \cite{FLRRS12} have been implemented as described in the corresponding papers.
+The main results \cite{BHKK13} have been implemented; both basic and simple equations being solved using a linear equation solver.
+
+In order to verify the implemented algorithm, a test suite and naive versions have been implemented, e.g. enumerating all homomorphisms.
+Verification has also been performed by aggregating all function values in definition \ref{def:delta} using the naive method of enumerating all subsets.
 
 \section{Benchmarks}
 TODO: Describe test data (generation and classes), scaling performance,
@@ -654,6 +671,11 @@ J.~Flum, and M.~Grohe.
 S.~Arora.
 \newblock Polynomial time approximation schemes for Euclidean TSP and other geometric problems.
 \newblock Foundations of Computer Science, 1996. Pro., 37th ann. sym. on (pp. 2-11). IEEE. 1996.
+
+\bibitem{DELL10}
+H.~Dell, and D.~van Melkebeek.
+\newblock Satisfiability allows no nontrivial sparsification unless the polynomial-time hierarchy collapses.
+\newblock Proceedings of the 42nd ACM symposium on Theory of computing (pp. 251-260). ACM. 2010.
 
 \bibitem{KOBLER94}
 J.~Köbler, U.~Schöning, and J.~Torán.
