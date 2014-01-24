@@ -558,7 +558,7 @@ In order to retrieve partial results for the number of injective homomorphisms $
 \begin{thm}
 \label{thm:fomin}
 Given some $S \subseteq V(P)$ and an injective homomorphism $\phi : S \rightarrow V(H)$ then $inj_{\phi}(P, H[S' \cup \phi(S)])$
-can be computed in time $O^*((\Sigma_{j=1}^{|P|-|S|}\binom{|H|}{j})|H|^{w_t(P)})$,
+can be computed in time $O^*((\sum_{j=1}^{|P|-|S|}\binom{|H|}{j})|H|^{w_t(P)})$,
 for all $S' \subseteq V(H) \setminus \phi(S)$ of size $|P| - |S|$.
 \end{thm}
 
@@ -580,7 +580,7 @@ The paper introduces the following notion of triples:
 
 \begin{defn}
 \label{def:delta}
-$\Delta(f, g, h) = \Sigma_{\substack{A, B, C \in U\\A \cap B = A \cap C = B \cap C = \emptyset}} f(A)g(B)h(C)$
+$\Delta(f, g, h) = \sum_{\substack{A, B, C \in U\\A \cap B = A \cap C = B \cap C = \emptyset}} f(A)g(B)h(C)$
 \end{defn}
 
 These are used to express counting subgraphs in terms of algebraic objects. $U$ is a universe from which the three disjoint sets are drawn.
@@ -661,7 +661,7 @@ f_\phi(A)g_\phi(B)h_\phi(C)\,.
 \end{equation}
 \end{defn}
 
-Combined with coefficients from a \emph{Vandermonde matrix}, given by $v_{ij} = (n - 2j)^i$, Bj\"orklund \emph{et al.}~\cite{BHKK13} prove that $\Sigma_j v_{ij}x_{j} = y_i$ holds.
+Combined with coefficients from a \emph{Vandermonde matrix}, given by $v_{ij} = (n - 2j)^i$, Bj\"orklund \emph{et al.}~\cite{BHKK13} prove that $\sum_j v_{ij}x_{j} = y_i$ holds.
 
 The second family of equations is the following:
 
