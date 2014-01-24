@@ -494,14 +494,14 @@ i.e. $\left\{v_1, v_2\right\} \in E(P) \Rightarrow \left\{\phi(v_1), \phi(v_2)\r
 
 
 An \emph{injective homomorphism} has an injective map.
-D{\'{\i}}az~{\em et al.}~\cite{DST02} introduced an algorithm for computing the number of homomorphisms extending some injective homomorphism $\phi$: $hom_{\phi}(P, H)$.
+D{\'{\i}}az~{\em et al.}~\cite{DST02} introduced an algorithm for computing the number of homomorphisms extending some injective homomorphism $\phi$: $hom_{\phi}(P, H)$ in time $O^*(|H|^{t_w(P)})$.
 The paper uses the terminology \emph{list-colorings} and requires an existing nice tree decomposition of the pattern graph, which can be computed in polynomial time in the case of bounded treewidth.
 In addition, the tree needs to be processed in a certain sequence as given in the following definition.
 
 \begin{defn}
-A \emph{stingy ordering} is an ordering $v_0, v_1, ..., v_{|T|}$ of all vertices in $V(T)$ s.t.:
+A \emph{stingy ordering} is an ordering $v_1, v_2, ..., v_{|T|}$ of all vertices in $V(T)$ s.t.:
 \begin{itemize}
-\item $v_0$ is a child node and $v_{|T|}$ is the root node
+\item $v_1$ is a child node and $v_{|T|}$ is the root node
 \item all parents of a node $v_i$ occur at indices $>i$ in the ordering
 \end{itemize}
 \end{defn}
@@ -553,19 +553,26 @@ In addition, $I_p(\psi)$ is the number of homomorphisms from $P_p$ onto $H$ t
 \end{algorithmic}
 \end{algorithm}
 
-In order to retrieve partial results for the number of injective homomorphisms $inj_{\phi}(P, H)$ it is possible to utilize apply inclusion-exclusion, as in a theorem due to Fomin \emph{et al.}~\cite{FLRRS12}:
+In order to retrieve partial results for the number of injective homomorphisms $inj_{\phi}(P, H)$ it is possible to apply inclusion-exclusion, as in a theorem due to Fomin \emph{et al.}~\cite{FLRRS12}:
 
 \begin{thm}
 \label{thm:fomin}
-Given some $S \subseteq V(P)$ and an injective homomorphism $\phi : S \rightarrow V(H)$ then $inj_{\phi}(P, H[S' \cup \phi(S)])$ can be computed in time $O^*(|H|^{|P|})$, for all $S' \subseteq V(H) \setminus \phi(S)$ of size $|P| - |S|$.
+Given some $S \subseteq V(P)$ and an injective homomorphism $\phi : S \rightarrow V(H)$ then $inj_{\phi}(P, H[S' \cup \phi(S)])$
+can be computed in time $O^*((\Sigma_{j=1}^{|P|-|S|}\binom{|H|}{j})|H|^{w_t(P)})$,
+for all $S' \subseteq V(H) \setminus \phi(S)$ of size $|P| - |S|$.
 \end{thm}
 
-%TODO: Add description of the Fomin proof and how it uses hom() in Diaz
+This result can be used as a subroutine when counting the total number of injective homomorphisms.
+The actual calculation relies on the following equality ~\cite{FLRRS12}:
 
-This result can be used as a subroutine when counting the total number of injective homomorphism.
+\begin{equation}
+inj_{\phi}(P, H[S' \cup \phi(S)]) = \sum_{X \subseteq S'} (-1)^{|S'|-|X|} hom_\phi(P, H[X \cup \phi(S)])
+\end{equation}
 
-The number of isomorphic subgraphs can be evaluated by calculating the number of injective homomorphisms from $P$ onto subgraphs of $H$, divided by the number of automorphisms
-, i.e. $\frac{inj(P, H)}{aut(P)} = \frac{inj(P, H)}{inj(P, P)}$ \cite{FLRRS12}.
+The time complexity follows by evaluating the LHS summand over all possible subsets $X$ (drawn from the universe), and aggregating the results to all $S'$ by using the trimmed zeta transform, as detailed in the paper.
+
+Finally, the number of isomorphic subgraphs can be evaluated by calculating the number of injective homomorphisms from $P$ onto subgraphs of $H$, divided by the number of automorphisms on the pattern graph.
+This can be expressed as $\textsc{IsoSubgraphs}(P, H) = \frac{inj(P, H)}{aut(P)} = \frac{inj(P, H)}{inj(P, P)}$ \cite{FLRRS12}.
 
 \section{Thin subgraphs as weighted disjoint triples}
 Using the notions introduced up to now, it is possible to study the contributions made by Bj\"orklund \emph{et al.}~\cite{BHKK13}.
