@@ -32,6 +32,7 @@
 \author{David Nilsson, davnils@kth.se \\ Advanced Individual Course In Computer Science (DD2464)}
 
 \begin{document}
+\pagenumbering{gobble}
 
 \maketitle
 \abstract{
@@ -43,6 +44,8 @@
 }
 
 \tableofcontents
+\cleardoublepage
+\pagenumbering{arabic}
 
 \chapter{Project Overview}
 This is an overview of this project, including the underlying purpose and the contents of this report.
@@ -491,19 +494,61 @@ i.e. $\left\{v_1, v_2\right\} \in E(P) \Rightarrow \left\{\phi(v_1), \phi(v_2)\r
 
 
 An \emph{injective homomorphism} has an injective map.
-D{\'{\i}}az~{\em et al.}~\cite{DST02} introduced an algorithm for computing the number of homomorphisms $hom_{\phi}(P, H)$ in time $O^*(|H|^{|P|})$.
-The paper uses the terminology \emph{colorings} and requires an existing nice tree decomposition of the pattern graph, which can be computed in polynomial time in the case of bounded treewidth.
+D{\'{\i}}az~{\em et al.}~\cite{DST02} introduced an algorithm for computing the number of homomorphisms extending some injective homomorphism $\phi$: $hom_{\phi}(P, H)$.
+The paper uses the terminology \emph{list-colorings} and requires an existing nice tree decomposition of the pattern graph, which can be computed in polynomial time in the case of bounded treewidth.
+In addition, the tree needs to be processed in a certain sequence as given in the following definition.
+
+\begin{defn}
+A \emph{stingy ordering} is an ordering $v_0, v_1, ..., v_{|T|}$ of all vertices in $V(T)$ s.t.:
+\begin{itemize}
+\item $v_0$ is a child node and $v_{|T|}$ is the root node
+\item all parents of a node $v_i$ occur at indices $>i$ in the ordering
+\end{itemize}
+\end{defn}
+
+The paper defines an additional critieria which ensures certain space bounds, but is left out of here for simplicity.
+$\textsc{GenerateStingyOrdering}$ can be computed by performing a traversal of the input tree from the leafs to the root node.
+
+Let $P_p = P[\cup_{v \in V(T_p)} X_v]$ for some pattern graph tree decomposition $(T, r, X)$, where $T_p$ denotes the subtree rooted in vertex $p$.
+Algorithm \ref{count-homomorphisms} counts the number of homomorphisms extending some existing injective homomorphism $\phi$.
+The outline corresponds to the one given in D{\'{\i}}az~{\em et al.}~\cite{DST02} as counting list-colorings, but only constrains any vertices in $\phi$ to their given target vertex.
+Note that $F_p = \left\{X_p \rightarrow V(H)\right\}$, i.e. the set of all maps from the bag to the host graph.
+In addition, $I_p(\psi)$ is the number of homomorphisms from $P_p$ onto $H$ that agree with $\psi$ on all vertices in $X_p$.
 
 \begin{algorithm}
 \begin{algorithmic}
 \caption{Algorithm counting the number of homomorphisms extending an existing map}
 \label{count-homomorphisms}
-\Procedure{CountHomomorphisms}{$P,H,\phi$}\Comment{Count the number of homomorphisms mapping P onto H, extending $\phi$}
+\Procedure{CountHomomorphisms}{$P, (T, r, X), H,\phi$}
 
-\State $\texttt{ordering} \gets \Call{GenerateStingyOrdering}{P}$
+\State $\texttt{S} \gets \Call{GenerateStingyOrdering}{T}$
 
-%TODO
+\ForAll{$p \in S$} 
+  \State $C \gets \texttt{children nodes of p in T}$
+  \If {$C = \emptyset$ $\texttt{and}$ $X_p = \left\{ v \right\}$}
+    \If {$v \in \phi$}
+        \State $I_p((v, \phi(v))) \gets 1$
+    \Else
+        \State $\forall a \in V(H): I_p((v, a)) \gets 1$
+    \EndIf
+  \ElsIf {$C = \left\{q_1, q_2\right\}$}
+      \State $\forall \psi \in F_p: I_p(\psi) \gets I_{q_1}(\psi) I_{q_2}(\psi)$
+  \ElsIf {$C = \left\{q\right\}$ $\texttt{and}$ $X_p \setminus X_q \not = \emptyset $}
+      \State $\left\{v\right\}\gets X_p \setminus X_q$
+      \ForAll{$\psi \in F_q$ $\texttt{and}$ $a \in V(H)$} 
+        \If {$\forall_{u \in S_q} \left\{\psi(u), a \right\} \in E(H)$}
+            \State $I_p(\psi \cup \left\{v, a \right\}) \gets I_q(\psi)$
+        \Else
+            \State $I_p(\psi \cup \left\{v, a \right\}) \gets 0$
+        \EndIf
+      \EndFor
+  \ElsIf {$C = \left\{q\right\}$ $\texttt{and}$ $X_q \setminus X_p \not = \emptyset $}
+      \State $\left\{v\right\}\gets X_q \setminus X_p$
+      \State $\forall \psi \in F_p: I_p(\psi) \gets I_{q_1}(\psi) I_{q_2}(\psi)$
+  \EndIf
+\EndFor
 
+\Return $I_r(\emptyset)$
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
@@ -512,7 +557,7 @@ In order to retrieve partial results for the number of injective homomorphisms $
 
 \begin{thm}
 \label{thm:fomin}
-Given some $S \subseteq P$ and an injective homomorphism $\phi : S \rightarrow H$ then $inj_{\phi}(P, H[S' \cup \phi(S)])$ can be computed in time $O^*(|H|^{|P|})$, for all $S' \subseteq H \setminus \phi(S)$ of size $|P| - |S|$.
+Given some $S \subseteq V(P)$ and an injective homomorphism $\phi : S \rightarrow V(H)$ then $inj_{\phi}(P, H[S' \cup \phi(S)])$ can be computed in time $O^*(|H|^{|P|})$, for all $S' \subseteq V(H) \setminus \phi(S)$ of size $|P| - |S|$.
 \end{thm}
 
 %TODO: Add description of the Fomin proof and how it uses hom() in Diaz
