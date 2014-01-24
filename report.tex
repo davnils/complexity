@@ -386,7 +386,7 @@ The graph isomorphism is well known to be hard in general but a polynomial algor
 In addition there are problems focused on deciding and counting subgraph structures.
 Such a classical problem is deciding if $G$ has a Hamiltonian path.
 A generalization is the \textsc{k-path} problem which decides if there are any paths of length $k$ in $G$.
-The counting version \textsc{\#k-path} determines the number of k-paths in $G$, and the decision version reduces naturally.
+The counting version \textsc{\#k-path} determines the number of k-paths in $G$.
 As noted in the section on parameterized complexity, it is known that \textsc{\#k-path} is \textsc{\#W[1]}-hard.
 Such a result implies that unless $P=NP$ there is no algorithm with running time $f(k)n^{O(1)}$, for some computable function $f$.
 This motivates research into faster but still exponential time algorithms for \textsc{\#k-path}, but also generalizations of the problem.
@@ -401,7 +401,7 @@ This approach has previously resulted in ``meet-in-the-middle'' algorithms, such
 with running time $O^*(|H|^{\frac{|P|}{2}})$.
 The defining property of this family of algorithms is a factor $|H|^{\frac{|P|}{2}}$ in the time complexity.
 Fomin \emph{et al.}~\cite{FLRRS12} established a similar result for thin pattern graphs, with running time $O^*(|H|^{\frac{|P|}{2} + 2p})$.
-\emph{Thin subgraphs} have constrained pathwidth ($p$) which is a measure describing the width of a path decomposition of the graph.
+\emph{Thin} subgraphs have constrained pathwidth ($p$) which is a measure describing the width of a path decomposition of the graph.
 These properties are defined and discussed in the next section.
 
 The main contribution of the surveyed "Counting thin subgraphs via packings faster than meet-in-the-middle time" paper \cite{BHKK13} is a runtime bound improving upon the $\frac{|P|}{2}$ term, breaking the ``meet-in-the-middle'' barrier.
@@ -421,7 +421,7 @@ A rooted tree decomposition of an undirected graph $G = (V, E)$ is a triple $(T
 \item $r$ is a root vertex of $T$.
 \item $T$ is a tree where each vertex has a \emph{bag} $X_i \in X$ containing a set of vertices.
 \item For every edge $\left\{v_1, v_2\right\} \in E$ there is some $X_i$ s.t. $\left\{v_1, x_2\right\} \subseteq X_i$.
-\item For every $v \in V$, the bags containing $v$ induce a subtree of $T$.
+\item For every $v \in V$, the bags containing $v$ induce a subtree on $T$.
 \end{itemize}
 \end{defn}
 
@@ -434,7 +434,7 @@ A central measure of complexity is the following:
 The \emph{width} of a tree decomposition $(T, r, X)$ is $w(T) = max_{X_i \in X} |X_i| - 1$.
 \end{defn}
 Commonly the minimum width over all decompositions is used, which is known as \emph{treewidth}, or $w_t(T)$.
-\emph{Pathwidth}, $w_p(T)$, is defined similarly and it bounds the treewidth, i.e. $w_t(T) \leq w_p(T)$, for any decomposition \cite{kintali12}.
+\emph{Pathwidth}, $w_p(T)$, is defined correspondingly and bounds the treewidth, i.e. $w_t(T) \leq w_p(T)$, for any decomposition \cite{kintali12}.
 
 Tree decompositions can be computed in linear time when the treewidth is bounded by some constant \cite{bodlaender96}.
 In practice this does not imply feasibility since the algorithms can still be exponential in the treewidth, which is the case of the proof referenced above.
@@ -462,7 +462,7 @@ Kintali and Munteanu \cite{kintali12} describe simple polynomial time algorithms
 % \end{itemize}
 % \end{defn}
 
-As a concrete example, consider the graph in figure \ref{fig:arbitrary-graph} decomposed into a nice tree decomposition (figure \ref{fig:decomp-graph}).
+As a concrete example, consider the graph in figure \ref{fig:arbitrary-graph} decomposed into a nice tree decomposition (\ref{fig:decomp-graph}).
 
 \begin{figure}[here]
 \centering
@@ -481,12 +481,12 @@ As a concrete example, consider the graph in figure \ref{fig:arbitrary-graph} de
 \end{figure}
 
 \section{Counting homomorphisms}
-One approach to counting isomorphisms is to consider maps of $P$ onto subgraphs of $H$, and count the number of such injective maps.
+One approach to counting isomorphisms is to consider maps of $P$ onto subgraphs of $H$, and count the number of injective maps.
 Formally we have the following:
 
 \begin{defn}
 A \emph{homomorphism} is a map $\phi : V(P) \rightarrow V(H)$ that preserves structure,
-i.e. $\left\{v_1, v_2\right\} \in E(P) \Leftrightarrow \left\{\phi(v_1), \phi(v_2)\right\} \in E(H)$.
+i.e. $\left\{v_1, v_2\right\} \in E(P) \Rightarrow \left\{\phi(v_1), \phi(v_2)\right\} \in E(H)$.
 \end{defn}
 
 
@@ -494,8 +494,19 @@ An \emph{injective homomorphism} has an injective map.
 D{\'{\i}}az~{\em et al.}~\cite{DST02} introduced an algorithm for computing the number of homomorphisms $hom_{\phi}(P, H)$ in time $O^*(|H|^{|P|})$.
 The paper uses the terminology \emph{colorings} and requires an existing nice tree decomposition of the pattern graph, which can be computed in polynomial time in the case of bounded treewidth.
 
-The number of isomorphic subgraphs can be evaluated by calculating the number of injective homomorphisms from $P$ onto subgraphs of $H$, divided by the number of automorphisms
-, i.e. $\frac{inj(P, H)}{aut(P)} = \frac{inj(P, H)}{inj(P, P)}$ \cite{FLRRS12}.
+\begin{algorithm}
+\begin{algorithmic}
+\caption{Algorithm counting the number of homomorphisms extending an existing map}
+\label{count-homomorphisms}
+\Procedure{CountHomomorphisms}{$P,H,\phi$}\Comment{Count the number of homomorphisms mapping P onto H, extending $\phi$}
+
+\State $\texttt{ordering} \gets \Call{GenerateStingyOrdering}{P}$
+
+%TODO
+
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
 
 In order to retrieve partial results for the number of injective homomorphisms $inj_{\phi}(P, H)$ it is possible to utilize apply inclusion-exclusion, as in a theorem due to Fomin \emph{et al.}~\cite{FLRRS12}:
 
@@ -508,20 +519,23 @@ Given some $S \subseteq P$ and an injective homomorphism $\phi : S \rightarrow H
 
 This result can be used as a subroutine when counting the total number of injective homomorphism.
 
+The number of isomorphic subgraphs can be evaluated by calculating the number of injective homomorphisms from $P$ onto subgraphs of $H$, divided by the number of automorphisms
+, i.e. $\frac{inj(P, H)}{aut(P)} = \frac{inj(P, H)}{inj(P, P)}$ \cite{FLRRS12}.
+
 \section{Thin subgraphs as weighted disjoint triples}
 Using the notions introduced up to now, it is possible to study the contributions made by Bj\"orklund \emph{et al.}~\cite{BHKK13}.
-The paper introduces the following triples:
+The paper introduces the following notion of triples:
 
 \begin{defn}
 \label{def:delta}
-$\Delta(f, g, h) = \Sigma_{\substack{A, B, C \in S\\A \cap B = A \cap C = B \cap C = \emptyset}} f(A)g(B)h(C)$
+$\Delta(f, g, h) = \Sigma_{\substack{A, B, C \in U\\A \cap B = A \cap C = B \cap C = \emptyset}} f(A)g(B)h(C)$
 \end{defn}
 
-These are used to express counting subgraphs in terms of algebraic objects.
+These are used to express counting subgraphs in terms of algebraic objects. $U$ is a universe from which the three disjoint sets are drawn.
 Similarly to a counting algorithm presented by Fomin~\emph{et al.}~\cite{FLRRS12}, Bj\"orklund \emph{et al.}~\cite{BHKK13} use a partition scheme which counts all injective isomorphisms in parts.
 
 \begin{defn}
-A 5-partitioning of the pattern graph $P$ with bounded pathwidth $p$ is a collection of pairwise disjoint sets $L \cup S \cup M \cup T \cup R = V(P)$, such that:
+A 5-partitioning of the pattern graph $P$ with bounded pathwidth $p$ is a collection of sets $L \sqcup S \sqcup M \sqcup T \sqcup R = V(P)$, such that:
 \begin{itemize}
 \item Every edge $e \in E(P)$ connects vertices between at most two consecutive sets in the ordering $L, S, M, T, R$.
 \item The separator sets $S$ and $T$ have size bounded in the pathwidth, i.e. $|S|, |T| \leq p$
