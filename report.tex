@@ -454,16 +454,7 @@ A \emph{nice tree decomposition} is a rooted tree decomposition $(T, r, X)$ sat
 \end{itemize}
 \end{defn}
 
-
 Kintali and Munteanu \cite{kintali12} describe simple polynomial time algorithms for criteria two and three.
-
-% TODO: Decide if to include labeling
-% The nodes of such a decomposition are typically labeled based on the position within the tree:
-% \begin{defn}
-% \begin{itemize}
-% \item .
-% \end{itemize}
-% \end{defn}
 
 As a concrete example, consider the graph in figure \ref{fig:arbitrary-graph} decomposed into a nice tree decomposition (\ref{fig:decomp-graph}).
 
@@ -484,6 +475,7 @@ As a concrete example, consider the graph in figure \ref{fig:arbitrary-graph} de
 \end{figure}
 
 \section{Counting homomorphisms}
+\label{section:injhomo}
 One approach to counting isomorphisms is to consider maps of $P$ onto subgraphs of $H$, and count the number of injective maps.
 Formally we have the following:
 
@@ -591,7 +583,7 @@ A 5-partitioning of the pattern graph $P$ with bounded pathwidth $p$ is a coll
 \begin{itemize}
 \item Every edge $e \in E(P)$ connects vertices between at most two consecutive sets in the ordering $L, S, M, T, R$.
 \item The separator sets $S$ and $T$ have size bounded in the pathwidth, i.e. $|S|, |T| \leq p$
-\item All remaining sets have $|L|, |M|, |R| \leq \frac{|P|}{3}$
+\item The remaining sets have $|L|, |M|, |R| \leq \frac{|P|}{3}$
 \end{itemize}
 \end{defn}
 
@@ -629,7 +621,7 @@ The approach taken by the paper is to formulate the problem in terms of a linear
 Hence the first step is to formulate a set of indeterminates to solve for.
 Note that, for $q$-sized subsets $A,B,C \subseteq U$, it holds that $|A\oplus B\oplus C|\equiv |A|+|B|+|C|=3q\equiv q\pmod 2\,$ \cite{BHKK13}, where $\oplus$ denotes symmetric difference.
 This implies that the symmetric difference is either odd or even, depending on $q$.
-It follows that there are a total of $\lfloor \frac{3q}{2} \rfloor$ indeterminates on the following form:
+It follows that there are a total of $\lfloor \frac{3q}{2} \rfloor$ indeterminates on the following form (where $j \in \left\{ i \in [3q] | i \equiv_2 q \right\}$:
 
 \begin{defn}
 $x_j=x_j(f_\phi,g_\phi,h_\phi)=\sum_{\substack{A,B,C\in\binom{U}{q}\\|A\oplus B\oplus C|=j}}
@@ -681,10 +673,10 @@ f_\phi(A)g_\phi(B)
 
 \end{defn}
 
-Given a parameter $0 \leq \gamma \leq 1/2$ the paper now takes the following:
+Given a parameter $0 \leq \gamma \leq 1/2$ the authors take the following:
 \begin{itemize}
-\item $\lfloor (3/2 - \gamma)q \rfloor$ simple equations
-\item at least $\lfloor q \gamma \rfloor$ basic equations, reaching the required number of independent equations
+\item $\lfloor (3/2 - \gamma)q \rfloor$ simple equations solving for $x_j$
+\item a number of basic equations, reaching the required number of independent equations
 \end{itemize}
 
 The parameter $\gamma$ is chosen in order to balance the contribution in running time from both of the families, which depends on the efficiency of evaluating certain matrix multiplications.
@@ -698,23 +690,48 @@ Hence the final running time for counting thin subgraphs is $O^*(n^{0.4547|P| + 
 
 \chapter{Implementation}
 This chapter describes an implementation of \emph{counting thin subgraphs} \cite{BHKK13}.
-The implementation is available as a git repository \footnote{https://github.com/davnils/count-subgraphs}.
+The implementation is available as a git repository \footnote{\url{https://github.com/davnils/count-subgraphs}}.
 
-\section{General overview}
-Counting of thin subgraphs has been implemented as presented in the paper \cite{BHKK13}.
-Internally it generates tree decompositions using the routine \emph{create\_join\_tree} available in the library dlib 18.5 \footnote{http://www.dlib.net}
-Nice tree decompositions \cite{kintali12}, counting homomorphisms \cite{DST02}, and counting injective homomorphisms \cite{FLRRS12} have been implemented as described in the corresponding papers.
-The main results \cite{BHKK13} have been implemented; both basic and simple equations being solved using a linear equation solver.
+\section{Overview}
+Counting of thin subgraphs has been implemented as presented in the paper \cite{BHKK13} with some implementation differences.
+Internally it generates tree decompositions using the routine \emph{create\_join\_tree} available in the library dlib 18.5 \footnote{\url{http://www.dlib.net}}
+Nice tree decompositions \cite{kintali12} and counting homomorphisms \cite{DST02} have been implemented as described in the corresponding papers.
+The space bounds mentioned as a third criteria in stingy orderings have been ignored since there practical cost is not an issue, at least with the relevant graph sizes.
 
-In order to verify the implemented algorithm, a test suite and naive versions have been implemented, e.g. enumerating all homomorphisms.
-Verification has also been performed by aggregating all function values in definition \ref{def:delta} using the naive method of enumerating all subsets.
+Counting injective homomorphisms \cite{FLRRS12} has been implemented partially as described.
+As mentioned in section \ref{section:injhomo}, the number of homomorphisms over all subsets is evaluated.
+The aggregation is however done naively without using the zeta transform, incurring additional work.
 
-\section{Benchmarks}
-TODO: Describe test data (generation and classes), scaling performance,
-statistical assurance in results, bottlenecks.
+Pattern partitioning has been implemented as an exhaustive search supporting different acceptance critiera, supplied as a predicate over the resulting sets ($L, S, M, T, R$).
+Counting isomorphic subgraphs involves partitioning the pattern graph such that $S$ and $T$ are non-empty, and $L, M, R$ are of equal size.
+The motivation for restricting the implementation to equally sized subsets is that the paper describes processing $q$-sized subsets from the universe, but this might be possible to generalize.
 
-\section{Analysis}
-TODO: analyze benchmarks
+Basic and simple equations have also been implemented, as specified \cite{BHKK13}.
+There is one trade-off where the intersection transform is calculated by enumerating all subsets instead of relying on evaluation through arithmetic circuits~\cite{BHKK08}.
+The linear system is built from any solved indeterminates, gathered from simple equations, and is combined with basic equations.
+It is solved by performing LU-decomposition using routines available in the boost library \footnote{\url{http://www.boost.org}}.
+
+\section{Correctness}
+Correctness verification has been performed by building a test suite.
+All implemented components have separate test cases which attempt to evaluate correctness within the available computational resources.
+One common way of verifying the implemented algorithms has been to implement the corresponding naive versions.
+These have been evaluated over random graphs of different sizes, including boundary instances such as single vertices.
+An example of this includes counting (optionally injective) homomorphisms by performing an exhaustive search.
+This is implemented by extending an existing homomorphism with an additional vertex in each step, and moving to the next candidate vertex.
+
+\section{Performance}
+Part of this project involved studying the implementation from a performance perspective, and building benchmarks checking the performance.
+The performance is however very limited and the implementation is not usable in real-life scenarios.
+It is possible to count subgraph isomorphisms on randomized pattern and host graphs up to about 10 vertices each in a time frame of seconds.
+
+The implementation is structured into two phases: generation of triples containing injective homomorphism counts between subgraphs, and building of linear equation systems.
+Each injective homomorphism mapping the partitions $S$ and $T$ onto the subgraph is considered in isolation.
+The runtime of the first phase is heavily dependent on the number of such candidates, but also on the underlying graphs being considered.
+This follows since all possible extensions are considered until the whole pattern graph is mapped onto the host graph.
+
+The runtime of the second phase is mostly dependent on the number of candidate injective homomorphisms.
+Each candidate generates a linear equation system but the generation is not a considerable bottleneck with the restrictive graph sizes.
+
 
 \begin{thebibliography}{10}
 
@@ -788,6 +805,11 @@ S.~Kintali, and S.~Munteanu.
 H.~Carr, J.~Snoeyink, and U.~Axen.
 \newblock Computing contour trees in all dimensions.
 \newblock {\em Proceedings of the eleventh annual ACM-SIAM symposium on Discrete algorithms}, pp. 918-926. (2000).
+
+\bibitem{BHKK08}
+A.~Bj{\"o}rklund, T.~Husfeldt, P.~Kaski, and M.~Koivisto.
+\newblock The fast intersection transform with applications to counting paths.
+\newblock {\em CoRR}, abs/0809.2489, 2008.
 
 \end{thebibliography}
 
