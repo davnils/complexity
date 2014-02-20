@@ -40,7 +40,7 @@
   It consists of two main parts: a text on parameterized complexity theory, and a description of a recent result related to counting thin subgraphs.
   The first part is an introductory text explaining common complexity classes, known results, and lower bounds.
   In addition to describing the counting algorithm there is also an introduction to counting structural properties in graph theory.
-  Finally an implementation of the counting algorithm is analyzed, including correctness verification and benchmarks.
+  Finally an implementation of the counting algorithm is analyzed, including correctness verification and a discussion on performance.
 }
 
 \tableofcontents
@@ -732,13 +732,23 @@ This follows since all possible extensions are considered until the whole patter
 The runtime of the second phase is mostly dependent on the number of candidate injective homomorphisms.
 Each candidate generates a linear equation system but the generation is not a considerable bottleneck with the restrictive graph sizes.
 
+\section{Conclusion}
+%TODO
+%Conclude about the implemented version and relate on its use in real life.
+
 
 \begin{thebibliography}{10}
 
+%TODO: Change reference to journal version
+%\bibitem{BHKK13}
+%A.~{Bj{\"o}rklund}, P.~Kaski, and {\L}.~Kowalik.
+%\newblock Counting thin subgraphs via packings faster than meet-in-the-middle time.
+%\newblock {\em arXiv} preprint arXiv:1306.4111, 2013.
+
 \bibitem{BHKK13}
-A.~{Bj{\"o}rklund}, P.~Kaski, and {\L}.~Kowalik.
-\newblock Counting thin subgraphs via packings faster than meet-in-the-middle time.
-\newblock {\em arXiv} preprint arXiv:1306.4111, 2013.
+A.~Bj{\"o}rklund, P.~Kaski, and L.~Kowalik.
+\newblock Counting Thin Subgraphs via Packings Faster Than Meet-in-the-Middle Time.
+\newblock {\em Proc. of the 25th Annual ACM-SIAM Symp. on Disc. Algo.}  45:594--603, 2014.
 
 \bibitem{FG06}
 J.~Flum, and M.~Grohe.
@@ -753,12 +763,12 @@ J.~Flum, and M.~Grohe.
 \bibitem{ARORA96}
 S.~Arora.
 \newblock Polynomial time approximation schemes for Euclidean TSP and other geometric problems.
-\newblock Foundations of Computer Science, 1996. Pro., 37th ann. sym. on (pp. 2-11). IEEE. 1996.
+\newblock {\em Foundations of Computer Science, 1996. Pro., 37th ann. sym.} (pp. 2-11). IEEE. 1996.
 
 \bibitem{DELL10}
 H.~Dell, and D.~van Melkebeek.
 \newblock Satisfiability allows no nontrivial sparsification unless the polynomial-time hierarchy collapses.
-\newblock Proceedings of the 42nd ACM symposium on Theory of computing (pp. 251-260). ACM. 2010.
+\newblock {\em Proceedings of the 42nd ACM symposium on Theory of computing} (pp. 251-260). ACM. 2010.
 
 \bibitem{KOBLER94}
 J.~Köbler, U.~Schöning, and J.~Torán.
@@ -768,7 +778,7 @@ J.~Köbler, U.~Schöning, and J.~Torán.
 \bibitem{W09}
 R.~Williams.
 \newblock Finding Paths of Length $k$ in $O^*(2^k)$ Time.
-\newblock Inform. Process. Lett. 109(6) pp.~315--318, 2009.
+\newblock {\em Inform. Process. Lett.} 109(6) pp.~315--318, 2009.
 
 \bibitem{VW09}
 V.~Vassilevska and R.~Williams.
@@ -799,7 +809,7 @@ F.~Ergun, R.~Sinha, and L.~Zhang.
 \bibitem{kintali12}
 S.~Kintali, and S.~Munteanu.
 \newblock Computing Bounded Path Decompositions in Logspace.
-\newblock {\em Electronic Colloquium on Computational Complexity (ECCC)}, (Vol. 19, p. 126), 2012.
+\newblock {\em Electronic Colloquium on Computational Complexity (ECCC)}, 19:126, 2012.
 
 \bibitem{carr00}
 H.~Carr, J.~Snoeyink, and U.~Axen.
