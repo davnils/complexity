@@ -37,10 +37,12 @@
 \maketitle
 \abstract{
   This report is part of the examination in the project course Advanced Individual Course In Computer Science.
-  It consists of two main parts: a text on parameterized complexity theory, and a description of a recent result related to counting thin subgraphs.
+  It is divided into two main parts: a text on parameterized complexity theory, and a description of recent advances in graph theory.
   The first part is an introductory text explaining common complexity classes, known results, and lower bounds.
-  In addition to describing the counting algorithm there is also an introduction to counting structural properties in graph theory.
+  The second part places focus on explaining the \emph{counting thin subgraphs} algorithm and the subroutines.
+  There is also an introduction to counting structural properties in graph theory.
   Finally an implementation of the counting algorithm is analyzed, including correctness verification and a discussion on performance.
+  The conclusion is that real-life performance is very restrictive for this specific implementation but the algorithm remains interesting from a theoretical point of view.
 }
 
 \tableofcontents
@@ -63,8 +65,8 @@ It gradually introduces common complexity classes and describes how to relate ha
 Following this, the second part involving counting thin subgraphs is introduced.
 This section describes how to implement a recent result by Bj\"orklund \emph{et al.}~\cite{BHKK13}.
 As part of this, a range of subresults and relevant measures in graph theory are explained.
-In addition, the counting algorithm has been implemented.
-This implementation is discussed in the last chapter, together with benchmarks and a discussion on correctness verification.
+In addition, the counting algorithm and all the subroutines have been implemented.
+This implementation is discussed in the last chapter, together with a discussion on correctness verification and performance.
 
 \chapter{Parameterized Complexity Theory}
 This chapter covers the first part of the project: parameterized complexity theory with existing results, complexity classes, and examples.
@@ -262,7 +264,7 @@ The class $\textsc{W[P]}$ contains all parameterized languages $(L, k)$ decidabl
 While generalizing $\FPT$, this class is clearly a constrained version of $\PARANP$.
 By a simulation argument \cite{FG06} it holds that $\textsc{W[P]} \subseteq \XP$.
 Many problems are contained in $\textsc{W[P]}$ since the nondeterminism can be used to generate a random string of logarithmic length, and then run a deterministic verifier which
-interprets substrings as indicies in the input.
+interprets substrings as indices in the input.
 For example this applies to \textsc{p-INDSET} which can be solved by letting the random string correspond to indices of all the chosen vertices, i.e. $O(\log |G|)$ bits.
 
 Since there is still a huge gap between $\FPT$ and $\textsc{W[P]}$, it is of interest to study more fine-grained runtime.
@@ -319,7 +321,7 @@ A \emph{kernelization} of a parameterized language $(L, k)$ is a function $ker :
 
 Flum and Grohe~\cite{FG06} prove that the existence of a kernelization of $P$ is equivalent to $P \in \FPT$, hence finding a kernelization is a suitable alternative when proving tractability.
 
-Even though the existence of a kernel implies tractability there can still be constraints concercing efficiency.
+Even though the existence of a kernel implies tractability there can still be constraints concerning efficiency.
 An example is $\textsc{p-VERTEX-COVER}$ which has a kernelization producing instances with at most $O(k^2)$ edges, which is believed to be tight, since a bound of $O(k^2 - \epsilon)$ for $\epsilon > 0$
 would imply $\coNP \subseteq \NP /Poly$ \cite{DELL10}.
 
@@ -498,7 +500,7 @@ A \emph{stingy ordering} is an ordering $v_1, v_2, ..., v_{|T|}$ of all vertice
 \end{itemize}
 \end{defn}
 
-The paper defines an additional critieria which ensures certain space bounds, but is left out of here for simplicity.
+The paper defines an additional criteria which ensures certain space bounds, but is left out of here for simplicity.
 $\textsc{GenerateStingyOrdering}$ can be computed by performing a traversal of the input tree from the leafs to the root node.
 
 Let $P_p = P[\cup_{v \in V(T_p)} X_v]$ for some pattern graph tree decomposition $(T, r, X)$, where $T_p$ denotes the subtree rooted in vertex $p$.
@@ -682,7 +684,7 @@ Given a parameter $0 \leq \gamma \leq 1/2$ the authors take the following:
 The parameter $\gamma$ is chosen in order to balance the contribution in running time from both of the families, which depends on the efficiency of evaluating certain matrix multiplications.
 Assuming efficient evaluation of square matrix multiplication and multiplication of $N^\alpha * N$ with an $N * N^\alpha$ matrix, this results in time complexity $O^*(n^{0.4547|P|})$ in order to construct the system \cite{BHKK13}.
 
-Following this, gaussian elimination is applied on the system in order to solve the resulting set of equations in polynomial time, and return $x_{3q}$ as $\Delta_\phi$.
+Following this, Gaussian elimination is applied on the system in order to solve the resulting set of equations in polynomial time, and return $x_{3q}$ as $\Delta_\phi$.
 
 The procedure outlined above will be executed for all $O(|H|^{2p})$ injective homomorphisms $\phi$.
 Summing over all $\Delta_\phi$ and dividing by the number of automorphisms gives the final number of isomorphic subgraphs.
@@ -702,7 +704,7 @@ Counting injective homomorphisms \cite{FLRRS12} has been implemented partially 
 As mentioned in section \ref{section:injhomo}, the number of homomorphisms over all subsets is evaluated.
 The aggregation is however done naively without using the zeta transform, incurring additional work.
 
-Pattern partitioning has been implemented as an exhaustive search supporting different acceptance critiera, supplied as a predicate over the resulting sets ($L, S, M, T, R$).
+Pattern partitioning has been implemented as an exhaustive search supporting different acceptance criteria, supplied as a predicate over the resulting sets ($L, S, M, T, R$).
 Counting isomorphic subgraphs involves partitioning the pattern graph such that $S$ and $T$ are non-empty, and $L, M, R$ are of equal size.
 The motivation for restricting the implementation to equally sized subsets is that the paper describes processing $q$-sized subsets from the universe, but this might be possible to generalize.
 
@@ -720,7 +722,7 @@ An example of this includes counting (optionally injective) homomorphisms by per
 This is implemented by extending an existing homomorphism with an additional vertex in each step, and moving to the next candidate vertex.
 
 \section{Performance}
-Part of this project involved studying the implementation from a performance perspective, and building benchmarks checking the performance.
+Part of this project involved studying the implementation from a performance perspective, and building benchmarks testing the performance.
 The performance is however very limited and the implementation is not usable in real-life scenarios.
 It is possible to count subgraph isomorphisms on randomized pattern and host graphs up to about 10 vertices each in a time frame of seconds.
 
@@ -733,17 +735,18 @@ The runtime of the second phase is mostly dependent on the number of candidate i
 Each candidate generates a linear equation system but the generation is not a considerable bottleneck with the restrictive graph sizes.
 
 \section{Conclusion}
-%TODO
-%Conclude about the implemented version and relate on its use in real life.
+This report has explained the counting thin subgraphs algorithm and the underlying subroutines needed in order to implement it.
+The recent algorithmic advances are of interest primarily due to the meet-in-middle barrier being broken in terms of time complexity.
 
+An implementation has been made of the algorithm in order to provide a deeper understanding of the results and survey real-life performance.
+The specific implementation is not very useful in real-life settings due to being limited to relatively small graphs.
+One practical issue with implementing these algorithms is generating tree decompositions which is considered to be in polynomial time for fixed treewidth, but still has big constants for optimal solutions.
+
+An alternative to implementing the more complex algorithms for counting subgraphs is relying on exhaustive searches.
+This is likely to perform well when combined with efficient heuristics, and provides a good starting point in terms of a simple implementation suitable for quick evaluation.
+In addition this does not constrain input graphs to have specific structural properties.
 
 \begin{thebibliography}{10}
-
-%TODO: Change reference to journal version
-%\bibitem{BHKK13}
-%A.~{Bj{\"o}rklund}, P.~Kaski, and {\L}.~Kowalik.
-%\newblock Counting thin subgraphs via packings faster than meet-in-the-middle time.
-%\newblock {\em arXiv} preprint arXiv:1306.4111, 2013.
 
 \bibitem{BHKK13}
 A.~Bj{\"o}rklund, P.~Kaski, and L.~Kowalik.
