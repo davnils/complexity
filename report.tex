@@ -258,7 +258,7 @@ In conclusion we have that $\FPT \subseteq \PARANP \cap \XP$.
 \section{Intermediate classes}
 
 \begin{defn}
-The class $\textsc{W[P]}$ contains all parameterized languages $(L, k)$ decidable by a NTDM using at most $f(k(x)) \log |x| $ non-deterministic time steps, for some computable function $f$.
+The class $\textsc{W[P]}$ contains all parameterized languages $(L, k)$ decidable by a NDTM using at most $f(k(x)) \log |x| $ non-deterministic time steps, for some computable function $f$.
 \end{defn}
 
 While generalizing $\FPT$, this class is clearly a constrained version of $\PARANP$.
@@ -267,7 +267,7 @@ Many problems are contained in $\textsc{W[P]}$ since the nondeterminism can be u
 interprets substrings as indices in the input.
 For example this applies to \textsc{p-INDSET} which can be solved by letting the random string correspond to indices of all the chosen vertices, i.e. $O(\log |G|)$ bits.
 
-Since there is still a huge gap between $\FPT$ and $\textsc{W[P]}$, it is of interest to study more fine-grained runtime.
+Since there is still a huge gap between $\FPT$ and $\textsc{W[P]}$, it is of interest to make a more fine-grained analysis.
 Consider decision circuits having OR, AND, and NOT nodes with unbounded fan-in.
 Such circuits can be seen as DAGs where the input vector propagates downwards to the single output node.
 
@@ -324,6 +324,8 @@ Flum and Grohe~\cite{FG06} prove that the existence of a kernelization of $P$ i
 Even though the existence of a kernel implies tractability there can still be constraints concerning efficiency.
 An example is $\textsc{p-VERTEX-COVER}$ which has a kernelization producing instances with at most $O(k^2)$ edges, which is believed to be tight, since a bound of $O(k^2 - \epsilon)$ for $\epsilon > 0$
 would imply $\coNP \subseteq \NP /Poly$ \cite{DELL10}.
+
+%TODO: Give an example kernelization and derive the FPT algorithm for some well-known problem
 
 \section{Relation to approximation}
 \label{sec:approx}
