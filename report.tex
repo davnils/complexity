@@ -250,7 +250,7 @@ Another generalization is allowing more running time in the deterministic settin
 $x^{f(k(x))} + f(k(x))$, for some computable function $f$.
 \end{defn}
 
-%TODO: Maybe add argument surrounding EXPTIME DTM and the following result (should probably be done as an indenpendent arugment)?
+%TODO: Maybe add argument surrounding EXPTIME DTM and the following result
 
 Interestingly the containment $\FPT \subset \XP$ is proper \cite{FG06}.
 In conclusion we have that $\FPT \subseteq \PARANP \cap \XP$.
@@ -303,7 +303,7 @@ Similarly to the issue of $\FPT = \textsc{W[P]}$, it is unknown if all set inclu
 
 \section{Hardness results and lower bounds}
 Given the established hierarchy of classes it would be useful to use these results in order to establish hardness of unknown problems.
-Flum and Grohe~\cite{FG06} prove that \textsc{p-independent set} and \textsc{p-dominating set} are \textsc{W[1]}-complete and \textsc{W[2]}-complete.
+Flum and Grohe~\cite{FG06} prove that \textsc{p-independent set} and \textsc{p-dominating set} are \textsc{W[1]}-complete and \textsc{W[2]}-complete respectively.
 Hence a natural approach showing hardness of a parameterized language $P$ is for example to reduce $\textsc{p-independent set}$.
 
 Another hardness result is the fact that \textsc{\#k-path} is \emph{\#W[1]}-complete, even though $\textsc{k-path} \in \FPT$ \cite{FG04}.
@@ -325,7 +325,12 @@ Even though the existence of a kernel implies tractability there can still be co
 An example is $\textsc{p-VERTEX-COVER}$ which has a kernelization producing instances with at most $O(k^2)$ edges, which is believed to be tight, since a bound of $O(k^2 - \epsilon)$ for $\epsilon > 0$
 would imply $\coNP \subseteq \NP /Poly$ \cite{DELL10}.
 
-%TODO: Give an example kernelization and derive the FPT algorithm for some well-known problem
+% TODO: Give an example kernelization and derive the FPT algorithm for some well-known problem
+% (1) Derive kernelization of 3CNF-SAT where the parameterization is the number of variables
+% (2) Describe how to use this result in order to show 3CNF-SAT \in FPT (w.r.t parameterization)
+%     and the corresponding fpt-algorithm.
+% parameterization: number of tuples => [<= 2^(3k)] running time
+% still useful to locate a parameterization? .
 
 \section{Relation to approximation}
 \label{sec:approx}
@@ -744,9 +749,9 @@ An implementation has been made of the algorithm in order to provide a deeper un
 The specific implementation is not very useful in real-life settings due to being limited to relatively small graphs.
 One practical issue with implementing these algorithms is generating tree decompositions which is considered to be in polynomial time for fixed treewidth, but still has big constants for optimal solutions.
 
-An alternative to implementing the more complex algorithms for counting subgraphs is relying on exhaustive searches.
-This is likely to perform well when combined with efficient heuristics, and provides a good starting point in terms of a simple implementation suitable for quick evaluation.
-In addition this does not constrain input graphs to have specific structural properties.
+An alternative to implementing the more complex algorithms for counting subgraphs is to rely on exhaustive searches.
+This is likely to perform well when combined with efficient heuristics, but also provides a good starting point in terms of a simple implementation suitable for quick evaluation.
+In addition this does not constrain input graphs to have specific structural properties in order to reach the specified asymptotic bounds.
 
 \begin{thebibliography}{10}
 
