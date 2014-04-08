@@ -73,17 +73,17 @@ This chapter covers the first part of the project: parameterized complexity theo
 
 \section{Motivation}
 In classical complexity theory we are given a very general view of computation.
-The asymptotic time and space complexity of problems is given as functions over the number of bits in the input.
+The asymptotic time and space complexity of problems is given as functions of the number of bits in the input.
 This results in the classification of many problems as \NP-hard (e.g. vertex cover, independent set), which is typically interpreted as the problem being difficult to solve.
 Does excluding polynomial time algorithms for problems in general make them infeasible in practice?
-For certain problems this might certainly be true but there is no fundamental reason to which this would hold in general.
+For certain problems this might certainly be true but there is no fundamental reason why this would hold in general.
 Many problems have special cases that are easy to solve or approximation algorithms that are capable of finding decent solutions within polynomial time.
 For example there might exist a polynomial time algorithm solving all cases when an aspect of the problem is considered constant, e.g. the number of vertices in a vertex cover.
 
 Parameterized complexity theory aims to provide a theoretical foundation for asymptotic analysis on a more fine-grained scale.
 This is achieved by not only considering inputs as a binary string but placing it into a context of the problem being solved.
 All of this is achieved while still maintaining classical complexity classes and focusing on existing results.
-This alternative view of complexity theory also forms natural ties with approximation algorithms, which is studied in section \ref{sec:approx}.
+This alternative view of complexity theory also forms natural ties with approximation algorithms, which are studied in section \ref{sec:approx}.
 
 \section{Parameterized decision problems}
 The first step in developing a more fine-grained theory is to describe how problems are expressed.
@@ -93,12 +93,12 @@ In addition to strings in the language $L$ to be decided, the following is also 
 A \emph{parameterization} is a polynomial time computable function $k : \Sigma^* \rightarrow \mathbb{N}$
 \end{defn}
 
-A parameterized decision problem is given on the format: $(L, k)$ where $L \subseteq \Sigma^*$ and $k$ is a parameterization of $L$.
-The following is a common parameterized version of vertex cover, known as $\textsc{p-VERTEX-COVER}$:
+A parameterized decision problem is given as a tuple $(L, k)$ where $L \subseteq \Sigma^*$ and $k$ is a parameterization of $L$.
+The following is a common parameterized version of vertex cover, known as $\textsc{P-VERTEX-COVER}$:
 \begin{itemize}
 \item Input: Graph $G$, number of vertices in cover $s$
 \item Parameterization: $k((G, s)) = s$.
-\item Problem: Does $G$ have a vertex cover of size $\leq s$?.
+\item Problem: Does $G$ have a vertex cover of size $\leq s$?
 \end{itemize}
 
 In classical complexity theory, reductions are given between problems as polynomial time computable mappings between strings in the languages.
@@ -106,7 +106,7 @@ Naturally this notion does not extend trivially to parameterized problems since 
 This results in the following:
 
 \begin{defn}
-A (strongly uniform) reduction $R$ mapping strings between the two parameterized languages $(L, k)$ and $(L', k')$ satisfies:
+A (strongly uniform) reduction $R : \left\{ 0,1 \right\}^* \times \mathbb{N} \rightarrow \left\{ 0,1 \right\}^* \times \mathbb{N}$ mapping $(L, k)$ onto $(L', k')$ satisfies:
 \begin{itemize}
 \item the reduction preserves membership, i.e. $x \in L \Leftrightarrow R(x) \in L'$
 \item $R(x)$ is computable in time $f(k(x)) |x|^{O(1)}$ for any $x \in L$, where $f$ is a computable function
@@ -114,19 +114,19 @@ A (strongly uniform) reduction $R$ mapping strings between the two parameterized
 \end{itemize}
 \end{defn}
 
-Typically such a reduction is written as $L <^{fpt} L'$.
+Typically the existence of such a reduction is written as $(L, k) <^{fpt} (L', k')$.
 The specific runtime bound is common within parameterized complexity and will later play a crucial part when defining fixed parameter tractability.
 
-The third constraint ensures that certain reductions are rejected as invalid.
+The third constraint implies that certain classical reductions do not transfer to this domain.
 An example of this is considering vertex cover, using the parameterization given previously, and extending this result to other graph problems.
-Independent set is commonly related to vertex cover as having the size $|G| - |S|$ for a graph $G$ with vertex cover $S$.
+The size of an independent set is expressed in terms of vertex cover as $|G| - |S|$ for a graph $G$ with vertex cover $S$.
 Does this imply that the decision version of independent set reduces to vertex cover under parameterized reductions, and hence also transferring tractability?
 It does not, since the parameterization depends on $|G|$ and there is no function $f$ of $k(x)$ that bounds $k'(x)$ (the number of vertices in the vertex cover).
 
-Furthermore, it is of interest to study if problems remain within some given set of languages when applied to a reduction $R$.
+Furthermore, it is of interest to study if problems remain within some given set of languages when applying a reduction $R$.
 
 \begin{defn}
-The \emph{closure} of a set $C$ of languages is defined as $\left[ C \right] = \left\{ L' : L \in C : L' <^{fpt} L\right\}$.
+The \emph{closure} of a set $C$ of languages is defined as $\left[ C \right] = \left\{ L' : L' <^{fpt} L \textit{ for some } L \in C\right\}$.
 \end{defn}
 
 \begin{defn}
@@ -137,7 +137,7 @@ A set $C$ of languages is \emph{closed} if $\left[ C \right] = C$.
 The $n$'th slice of a parameterized problem $(L, k)$ is $\left\{ x \in L : k(x) = n \right\}$.
 \end{defn}
 
-An example of slices is \lang{3-COLORABILITY}, which is the language formed by the slice where $n = 3$ when using the standard parameterization \lang{p-COLORABILITY}.
+An example of a slice is the classical language \textsc{3-COLORABILITY}, which is formed by the slice where $n = 3$ when using the standard parameterization \textsc{P-VERTEX-COVER} (note that these notations do not refer to the same thing).
 Slices are used later on when relating parameterized complexity classes to classical ones but also when discussing hardness results.
 
 \section{Fixed parameter tractability}
@@ -156,16 +156,16 @@ would correspond to reasonable scaling behaviour in running time.
 Based on this definition we have a class of tractable problems:
 
 \begin{defn}
-The (strongly uniform) class $\FPT$ consists of all parameterized languages decided by some fpt-algorithm and is closed w.r.t fpt-reductions.
+The (strongly uniform) class $\FPT$ consists of all parameterized languages decided by some fpt-algorithm.
 \end{defn}
 
 As an example of this we have the following:
 \begin{thm}
-$\textsc{p-VERTEX-COVER} \in \FPT$
+$\textsc{P-VERTEX-COVER} \in \FPT$
 \end{thm}
 
 \begin{proof}
-Algorithm \ref{fpt-vertex-cover} can be seen as a binary tree of height $k$ where each node performs a linear amount of work (in the number of edges), i.e. $\textsc{p-VERTEX-COVER}$ is decided in $O(2^k |E(G)|)$ time.
+Algorithm \ref{fpt-vertex-cover} can be seen as a binary tree of height $k$ where each node performs a linear amount of work (in the number of edges), i.e. $\textsc{P-VERTEX-COVER}$ is decided in $O(2^k |E(G)|)$ time.
 It is based on the observation that deciding if a vertex cover of size $k$ exists can be expressed as a sequence of $k$ choices.
 This follows since a valid vertex cover must include at least one vertex for each edge, hence every step can consider covering either vertex of an edge and remove all covered edges.
 The algorithm succeeds only when the set of edges is empty (and has hence been covered), and will fail when edges remain and $k = 0$.
@@ -184,17 +184,8 @@ The algorithm succeeds only when the set of edges is empty (and has hence been c
 
 \State $\left\{v_1, v_2\right\} \gets \texttt{Some edge in } E$
 
-\State $E'\gets \emptyset$
-\State $E''\gets \emptyset$
-
-\ForAll{$e \in E$} 
-  \If {$v_1 \not \in e $}
-      \State $E'\gets \left\{e\right\}\cup E'$
-  \EndIf
-  \If {$v_2 \not \in e $}
-      \State $E''\gets \left\{e\right\}\cup E''$
-  \EndIf
-\EndFor
+\State $E'\gets \left\{ e \in E : v_1 \not \in e \right\}$
+\State $E''\gets \left\{ e \in E : v_2 \not \in e \right\}$
 
 \If {\Call{HasVertexCover}{$E', k - 1$}}
     \Return \texttt{True}
@@ -208,8 +199,7 @@ The algorithm succeeds only when the set of edges is empty (and has hence been c
 \end{algorithmic}
 \end{algorithm}
 
-Another even simpler example of a problem in $\FPT$ is \textsc{3CNF-SAT} when the parameterization is taken as the number of clauses $c$.
-This follows since the number of literals is bounded in $c$ and an exhaustive search has time complexity $O(2^{3c})$.
+%TODO: Add example of another FPT algorithm here
 
 There is a notable connection between languages in $\FPT$ and the classical class \P \cite{FG06}:
 
@@ -218,16 +208,16 @@ All slices of a language in $\FPT$ are in $\P$.
 \end{thm}
 
 By the contrapositive we have that if there is some slice $(L, k)_{l} \in \NPC$, it follows that $(L, k) \not \in \FPT$, assuming $\P \not = \NP$.
-An example of this is the fact that \lang{3-COLORABILITY} is \NP-hard, and hence under reasonable assumptions, it follows that $\lang{p-COLORABILITY} \not \in \FPT$.
+An example of this is the fact that \lang{3-COLORABILITY} is \NP-hard, and hence under reasonable assumptions, it follows that $\textsc{P-COLORABILITY} \not \in \FPT$.
 
 \section{Generalized classes}
 The class of fixed parameter tractable languages can be seen as examples of where effective algorithms have been found.
-There are however languages outside of this class; a concrete example of this is independent set, which can be parameterized as follows ($\textsc{p-INDSET}$):
+There are however languages outside of this class; a concrete example of this is independent set, which can be parameterized as follows ($\textsc{P-INDSET}$):
 
 \begin{itemize}
 \item Input: Graph $G$, number of vertices in independent set $s$
 \item Parameterization: $k((G, s)) = s$.
-\item Problem: Does $G$ have an independent set of size $\ge s$?.
+\item Problem: Does $G$ have an independent set of size $\ge s$?
 \end{itemize}
 
 This problem will in the next section be shown to be outside of $\FPT$ under realistic complexity-theoretic assumptions, motivating generalizations of $\FPT$.
@@ -266,7 +256,7 @@ While generalizing $\FPT$, this class is clearly a constrained version of $\PARA
 By a simulation argument \cite{FG06} it holds that $\textsc{W[P]} \subseteq \XP$.
 Many problems are contained in $\textsc{W[P]}$ since the nondeterminism can be used to generate a random string of logarithmic length, and then run a deterministic verifier which
 interprets substrings as indices in the input.
-For example this applies to \textsc{p-INDSET} which can be solved by letting the random string correspond to indices of all the chosen vertices, i.e. $O(\log |G|)$ bits.
+For example this applies to \textsc{P-INDSET} which can be solved by letting the random string correspond to indices of all the chosen vertices, i.e. $O(k \log |G|)$ bits, with $k$ being the value of the parameterization.
 
 Since there is still a huge gap between $\FPT$ and $\textsc{W[P]}$, it is of interest to make a more fine-grained analysis.
 Consider decision circuits having OR, AND, and NOT nodes with unbounded fan-in.
@@ -276,7 +266,7 @@ Such circuits can be seen as DAGs where the input vector propagates downwards to
 The set $C[t, d]$ contains all decision circuits having input-output paths $P$ of length at most $d$, with $P$ having at most $t$ nodes of input-degree $\ge 2$.
 \end{defn}
 
-In addition we define a parameterized problem \textsc{p-WeightedCircuitSat} as follows:
+In addition we define a parameterized problem \textsc{P-WeightedCircuitSat} as follows:
 \begin{itemize}
 \item Input: Decision circuit $C$, binary weight $w$
 \item Parameterization: $k((C, w)) = w$.
@@ -286,27 +276,27 @@ In addition we define a parameterized problem \textsc{p-WeightedCircuitSat} as f
 Using this statement we can define relative hardness though reductions:
 
 \begin{defn}
-For $t \ge 1$: $W[t] = \left\{P : P <^{fpt} \textsc{p-WeightedCircuitSat} \right\}$ where the reduction is constrained to circuits $c$ s.t. $c \in C[t, d]$ for some $d$.
+For $t \ge 1$: $\textsc{W}[t] = \left\{P : P <^{fpt} \textsc{P-WeightedCircuitSat} \right\}$ where the reduction is constrained to circuits $c$ s.t. $c \in C[t, d]$ for some $d$.
 \end{defn}
 
-In the larger context the $W[t]$ family of classes form a hierarchy:
+In a larger context the $\textsc{W}[t]$ family of classes form a hierarchy:
 
 \begin{thm}
 $\FPT \subseteq \textsc{W[1]} \subseteq \textsc{W[2]} \subseteq ...  \subseteq \textsc{W[P]} \subseteq \PARANP \cap \XP$
 \end{thm}
 
-Flum and Grohe~\cite{FG06} prove that $W[t] \subseteq \textsc{W[P]}$.
+Flum and Grohe~\cite{FG06} prove that $\textsc{W}[t] \subseteq \textsc{W[P]}$.
 Similarly to the issue of $\FPT = \textsc{W[P]}$, it is unknown if all set inclusions are strict \cite{FG06}.
 
 \section{Hardness results and lower bounds}
-Given the established hierarchy of classes it would be useful to use these results in order to establish hardness of unknown problems.
-Flum and Grohe~\cite{FG06} prove that \textsc{p-independent set} and \textsc{p-dominating set} are \textsc{W[1]}-complete and \textsc{W[2]}-complete respectively.
-Hence a natural approach showing hardness of a parameterized language $P$ is for example to reduce $\textsc{p-independent set}$.
+Given the established hierarchy of problem classes it would be useful to use these results in order to establish hardness of other problems.
+Flum and Grohe~\cite{FG06} prove that \textsc{P-INDSET} and \textsc{P-DOMINATING SET} are \textsc{W[1]}-complete and \textsc{W[2]}-complete respectively.
+Hence a natural approach showing hardness of a parameterized language is for example to reduce $\textsc{P-INDSET}$ to it.
 
-Another hardness result is the fact that \textsc{\#k-path} is \emph{\#W[1]}-complete, even though $\textsc{k-path} \in \FPT$ \cite{FG04}.
+Another hardness result is the fact that \textsc{\#K-PATH} is \textsc{\#W[1]}-complete, even though $\textsc{K-PATH} \in \FPT$ \cite{FG04}.
 The paper introduces parameterized analysis in the context of counting problems.
 
-If it is not possible to find any hardness reductions it might be worth to consider if $P \in \FPT$.
+If it is not possible to find any hardness reductions it might be worth to consider if $\P \in \FPT$.
 
 \begin{defn}
 A \emph{kernelization} of a parameterized language $(L, k)$ is a function $ker : \Sigma^* \rightarrow \Sigma^*$ satisfying:
@@ -316,32 +306,32 @@ A \emph{kernelization} of a parameterized language $(L, k)$ is a function $ker :
 \end{itemize}
 \end{defn}
 
-Flum and Grohe~\cite{FG06} prove that the existence of a kernelization of $P$ is equivalent to $P \in \FPT$, hence finding a kernelization is a suitable alternative when proving tractability.
+Flum and Grohe~\cite{FG06} prove that the existence of a kernelization of $(L, k)$ is equivalent to $(L, k) \in \FPT$, hence finding a kernelization is a suitable alternative when proving tractability.
 
 Even though the existence of a kernel implies tractability there can still be constraints concerning efficiency.
-An example is $\textsc{p-VERTEX-COVER}$ which has a kernelization producing instances with at most $O(k^2)$ edges, which is believed to be tight, since a bound of $O(k^2 - \epsilon)$ for $\epsilon > 0$
+An example is $\textsc{P-VERTEX-COVER}$ which has a kernelization producing instances with at most $O(k^2)$ edges, which is believed to be tight, since a bound of $O(k^2 - \epsilon)$ for $\epsilon > 0$
 would imply $\coNP \subseteq \NP /Poly$ \cite{DELL10}.
 
 \section{Relation to approximation}
 \label{sec:approx}
 One way of approaching \NP-hard problems is to design approximation algorithms.
-The defining property is that they are guaranteed to find a solution within some time and cost bounds.
+In this setting it is of interest to find solutions that are close to optimal in polynomial time.
 
-An optimization problem $O$ is typically stated as a triplet $O = (S, cost_f(x), opt_f(x))$,
-where the cost and opt functions return the optimized cost and optimum respectively for some input $x$, and $S$ is the set of all solutions.
+An optimization problem $O$ is typically stated as a triplet $O = (S, cost(x), opt(x))$,
+where the $cost(x)$ and $opt(x)$ functions return the optimized cost and optimum respectively for some input $x$, and $S$ is the set of all solutions.
 
 There are different classes of approximation but a central measure of optimality is the following:
 
 \begin{defn}
-The approximation ratio of an optimization problem $O = (S, cost_f(x), opt_f(x))$ with respect to an input $x$ is defined as:
+The approximation ratio of an optimization problem $O = (S, cost(x), opt(x))$ with respect to an input $x$ is defined as:
 
-$\textsc{ApproxRatio}_f(x) = max \left\{ \frac{opt_f(x)}{cost_f(x)}, \frac{cost_f(x)}{opt_f(x)} \right\}$
+$\textsc{ApproxRatio}(x) = max \left\{ \frac{opt(x)}{cost(x)}, \frac{cost(x)}{opt(x)} \right\}$
 \end{defn}
 
 Given this we have the basic definition of an algorithms finding approximate solutions in polynomial time.
 
 \begin{defn}
-A polynomial time $\epsilon$ -approximation algorithm computes solutions for inputs $x$ in polynomial time s.t. $\textsc{ApproxRatio}_f(x) \leq 1 + \epsilon$.
+A polynomial time $\epsilon$ -approximation algorithm computes solutions for inputs $x$ in polynomial time s.t. $\textsc{ApproxRatio}(x) \leq 1 + \epsilon$.
 \end{defn}
 
 The first very general class captures all problems approximable in polynomial time.
@@ -350,8 +340,8 @@ The first very general class captures all problems approximable in polynomial ti
 An optimization problem is in $\PTAS$ (i.e. there is a polynomial time approximation scheme) if there is a $\frac{1}{\epsilon}$ -polynomial time approximation algorithm for all $\epsilon$.
 \end{defn}
 
-Hence $\PTAS$ allows running times such as $O(n^{\epsilon ^ \epsilon})$, i.e. $n$ having exponential dependencies on $\epsilon$.
-The approximation scheme by Arora~\cite{ARORA96} to the bounded metric TSP is in $\PTAS$, with running time $O(n(\log n)^{O(\epsilon)})$.
+Hence $\PTAS$ allows running times such as $O(n^{-\epsilon^{-\epsilon}})$, i.e. $n$ having exponential dependencies in $\frac{1}{\epsilon}$.
+The approximation scheme by Arora~\cite{ARORA96} to the bounded metric TSP is in $\PTAS$, with running time $O(n(\log n)^{O(\frac{1}{\epsilon})})$.
 A more refined view restricts this property:
 
 \begin{defn}
@@ -384,15 +374,15 @@ This chapter covers the theory of the second part of this project: how a certain
 \section{Introduction to counting patterns}
 Graph theory offers a range of problems typically defined over a graph $G = (V, E)$, which will be assumed to be undirected for now.
 One category of problems aim to identify and count structures in graphs.
-The graph isomorphism is well known to be hard in general but a polynomial algorithm is yet to be excluded \cite{KOBLER94}.
+The graph isomorphism is believed to be hard in general but a polynomial algorithm is yet to be excluded \cite{KOBLER94}.
 In addition there are problems focused on deciding and counting subgraph structures.
-Such a classical problem is deciding if $G$ has a Hamiltonian path.
-A generalization is the \textsc{k-path} problem which decides if there are any paths of length $k$ in $G$.
-The counting version \textsc{\#k-path} determines the number of k-paths in $G$.
-As noted in the section on parameterized complexity, it is known that \textsc{\#k-path} is \textsc{\#W[1]}-hard.
+A classical problem is deciding if $G$ has a Hamiltonian path.
+A generalization is the \textsc{K-PATH} problem which asks if there are any paths of length $k$ in $G$.
+The counting version \textsc{\#K-PATH} determines the number of k-paths in $G$.
+As noted in the section on parameterized complexity, it is known that \textsc{\#K-PATH} is \textsc{\#W[1]}-hard.
 Such a result implies that unless $P=NP$ there is no algorithm with running time $f(k)n^{O(1)}$, for some computable function $f$.
-This motivates research into faster but still exponential time algorithms for \textsc{\#k-path}, but also generalizations of the problem.
-\textsc{k-path} is currently known to be solvable in time $O^*(2^k)$ \cite{W09}, using an algebraic approach.
+This motivates research into faster but still exponential time algorithms for \textsc{\#K-PATH}, but also generalizations of the problem.
+\textsc{K-PATH} is currently known to be solvable in time $O^*(2^k)$ \cite{W09}, using an algebraic approach.
 
 Generalizing the problem of counting paths to subgraphs maintains the same fundamental hardness result, but is still worth to consider in a non-naive way.
 Formally we are given an undirected pattern graph $P$ and an undirected host graph $H$, and we wish to count the number of occurrences of $P$ in $H$.
