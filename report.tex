@@ -363,7 +363,7 @@ Based on the definition it is clear that the following relations hold:
 $\FPTAS \subseteq \EPTAS \subseteq \PTAS$
 \end{thm}
 
-Optimization problems $\EPTAS$ are of special interest since all of these problem are also in $\FPT$, by a constructive argument \cite{FG06}.
+Optimization problems $\EPTAS$ are of special interest since all of these problems are also in $\FPT$, by a constructive argument \cite{FG06}.
 Such transformations are known as \emph{standard parameterizations} \cite{FG06} and use the solution cost as the parameterization.
 Another view of this result is that by finding lower bounds in parameterized complexity theory it is possible to conclude that optimization problems are not contained in $\EPTAS$.
 
@@ -380,29 +380,28 @@ A classical problem is deciding if $G$ has a Hamiltonian path.
 A generalization is the \textsc{K-PATH} problem which asks if there are any paths of length $k$ in $G$.
 The counting version \textsc{\#K-PATH} determines the number of k-paths in $G$.
 As noted in the section on parameterized complexity, it is known that \textsc{\#K-PATH} is \textsc{\#W[1]}-hard.
-Such a result implies that unless $P=NP$ there is no algorithm with running time $f(k)n^{O(1)}$, for some computable function $f$.
-This motivates research into faster but still exponential time algorithms for \textsc{\#K-PATH}, but also generalizations of the problem.
-\textsc{K-PATH} is currently known to be solvable in time $O^*(2^k)$ \cite{W09}, using an algebraic approach.
+Such a result implies that unless $\P=\NP$ there is no fpt-algorithm solving the problem.
+This motivates research into faster non-fpt algorithms for \textsc{\#K-PATH}, but also generalizations of the problem.
+\textsc{K-PATH} is currently known to be solvable in time $O^*(1.657^k)$ \cite{B10}, using a Monte Carlo algorithm.
 
 Generalizing the problem of counting paths to subgraphs maintains the same fundamental hardness result, but is still worth to consider in a non-naive way.
 Formally we are given an undirected pattern graph $P$ and an undirected host graph $H$, and we wish to count the number of occurrences of $P$ in $H$.
 Enumerating all subgraphs of $H$ isomorphic to $P$ yields a running time of $O(|H|^{|P|})$.
 
 A more efficient approach is to limit the type of graphs being considered and exploit this special structure when counting.
-This approach has previously resulted in ``meet-in-the-middle'' algorithms, such as the result by Vassilevska and Williams~\cite{VW09} which only considers pattern graphs having an independent set of size $\frac{|P|}{2}$,
-with running time $O^*(|H|^{\frac{|P|}{2}})$.
-The defining property of this family of algorithms is a factor $|H|^{\frac{|P|}{2}}$ in the time complexity.
+This approach has previously resulted in ``meet-in-the-middle'' algorithms, all having a factor $|H|^{\frac{|P|}{2}}$ in the time complexity.
+Such an algorithm is the result by Vassilevska and Williams~\cite{VW09} which only considers pattern graphs having an independent set of size $\frac{|P|}{2}$, with running time $O^*(|H|^{\frac{|P|}{2}})$.
 Fomin \emph{et al.}~\cite{FLRRS12} established a similar result for thin pattern graphs, with running time $O^*(|H|^{\frac{|P|}{2} + 2p})$.
-\emph{Thin} subgraphs have constrained pathwidth ($p$) which is a measure describing the width of a path decomposition of the graph.
+\emph{Thin} subgraphs have constrained pathwidth $p$ which is a measure describing the width of a path decomposition of the graph.
 These properties are defined and discussed in the next section.
 
-The main contribution of the surveyed "Counting thin subgraphs via packings faster than meet-in-the-middle time" paper \cite{BHKK13} is a runtime bound improving upon the $\frac{|P|}{2}$ term, breaking the ``meet-in-the-middle'' barrier.
+The main contribution of the surveyed ``Counting thin subgraphs via packings faster than meet-in-the-middle time'' paper \cite{BHKK13} is a runtime bound improving upon the $\frac{|P|}{2}$ term, breaking the ``meet-in-the-middle'' barrier.
 Internally it uses some of the techniques from the paper by Fomin \emph{et al.}~\cite{FLRRS12},
 but in addition it introduces an algebraic technique permitting efficient aggregation of partial results on subgraph partitions.
 The specific runtime achieved is $O^*(|H|^{0.4547|P| + 2p})$ for bounded pathwidth $p$ w.r.t to $|P|$.
 All of these steps are outlined in the following sections.
 
-
+\newpage
 \section{Path- and Tree-decompositions}
 As motivated in the previous section there are problems which are easier to solve for graphs being constrained in certain ways.
 One such measure is comparing the graph to a tree by performing a decomposition into parts.
@@ -417,8 +416,8 @@ A rooted tree decomposition of an undirected graph $G = (V, E)$ is a triple $(T
 \end{itemize}
 \end{defn}
 
-Correspondingly, a \emph{path decomposition} is a decomposition into paths.
-
+Correspondingly, a \emph{path decomposition} is a decomposition into a single path, with bags as previously described.
+In this case it is required that all bags containing some $v \in V$ induce a subpath on $T$.
 Tree decompositions, also known as join trees, have several applications outside of graph theory, such as AI \cite{carr00}.
 A central measure of complexity is the following:
 
@@ -426,10 +425,10 @@ A central measure of complexity is the following:
 The \emph{width} of a tree decomposition $(T, r, X)$ is $w(T) = max_{X_i \in X} |X_i| - 1$.
 \end{defn}
 Commonly the minimum width over all decompositions is used, which is known as \emph{treewidth}, or $w_t(T)$.
-\emph{Pathwidth}, $w_p(T)$, is defined correspondingly and bounds the treewidth, i.e. $w_t(T) \leq w_p(T)$, for any decomposition \cite{kintali12}.
+\emph{Pathwidth}, $w_p(T)$, is defined correspondingly and bounds the treewidth, i.e. $w_t(T) \leq w_p(T)$ \cite{kintali12}, since any path decomposition is also a tree decomposition.
 
 Tree decompositions can be computed in linear time when the treewidth is bounded by some constant \cite{bodlaender96}.
-In practice this does not imply feasibility since the algorithms can still be exponential in the treewidth, which is the case of the proof referenced above.
+In practice this does not imply feasibility since the algorithms can still be exponential in the treewidth \cite{bodlaender96}.
 
 In addition, tree decompositions can be transformed in order to allow more efficient traversals:
 
@@ -437,7 +436,7 @@ In addition, tree decompositions can be transformed in order to allow more effic
 A \emph{nice tree decomposition} is a rooted tree decomposition $(T, r, X)$ satisfying:
 \begin{itemize}
 \item $T$ is a binary tree.
-\item If $v \in T$ has two children nodes $p, q$ then $X_v = X_p = X_q$.
+\item If $v \in T$ has two children $p, q$ then $X_v = X_p = X_q$.
 \item If $v \in T$ has a single child $p$ then either
   (1) $|X_v| = |X_p| + 1$ and $X_p \subset X_v$, or (2) $|X_v| = |X_p| - 1$ and $X_v \subset X_p$.
 \end{itemize}
@@ -458,14 +457,14 @@ As a concrete example, consider the graph in figure \ref{fig:arbitrary-graph} de
 \begin{subfigure}[b]{\linewidth}
 \centering
 \includegraphics[width=6cm]{images/nice_tree_decomp.png} 
-\caption[Decomposition]{Nice tree decomposition of the graph in figure \ref{fig:arbitrary-graph} of width $|\left\{b, c, d\right\}| - 1 = 2$}
+\caption[Decomposition]{Nice tree decomposition of the graph in figure \ref{fig:arbitrary-graph} of width $|\left\{b, c, d\right\}| - 1 = 2$. The root node is $\left\{ d \right\}$.}
 \label{fig:decomp-graph}
 \end{subfigure}
 \end{figure}
 
 \section{Counting homomorphisms}
 \label{section:injhomo}
-One approach to counting isomorphisms is to consider maps of $P$ onto subgraphs of $H$, and count the number of injective maps.
+One approach to counting isomorphic subgraphs is to consider maps of $P$ onto subgraphs of $H$, and count the number of injective maps.
 Formally we have the following:
 
 \begin{defn}
@@ -473,10 +472,13 @@ A \emph{homomorphism} is a map $\phi : V(P) \rightarrow V(H)$ that preserves str
 i.e. $\left\{v_1, v_2\right\} \in E(P) \Rightarrow \left\{\phi(v_1), \phi(v_2)\right\} \in E(H)$.
 \end{defn}
 
+An \emph{injective homomorphism} is an injective such map and it is \emph{partial} if only a subset of the vertices is included.
+It is useful to extend a partial injective homomorphism by mapping additional vertices while preserving the edge structure.
+This might result in an extension that is no longer injective.
 
-An \emph{injective homomorphism} has an injective map.
-D{\'{\i}}az~{\em et al.}~\cite{DST02} introduced an algorithm for computing the number of homomorphisms extending some injective homomorphism $\phi$: $hom_{\phi}(P, H)$ in time $O^*(|H|^{t_w(P)})$.
-The paper uses the terminology \emph{list-colorings} and requires an existing nice tree decomposition of the pattern graph, which can be computed in polynomial time in the case of bounded treewidth.
+Let $hom_{\phi}(P, H)$ denote the number of homomorphisms extending some injective homomorphism $\phi$.
+D{\'{\i}}az~{\em et al.}~\cite{DST02} introduced an algorithm for computing $hom_{\phi}(P, H)$ in time $O^*(|H|^{t_w(P)})$.
+The paper uses the term \emph{list-colorings} and requires an existing nice tree decomposition of the pattern graph, which can be computed in polynomial time in the case of bounded treewidth.
 In addition, the tree needs to be processed in a certain sequence as given in the following definition.
 
 \begin{defn}
@@ -488,9 +490,9 @@ A \emph{stingy ordering} is an ordering $v_1, v_2, ..., v_{|T|}$ of all vertice
 \end{defn}
 
 The paper defines an additional criteria which ensures certain space bounds, but is left out of here for simplicity.
-$\textsc{GenerateStingyOrdering}$ can be computed by performing a traversal of the input tree from the leafs to the root node.
+A Stingy ordering can be computed by performing a traversal of the input tree from the leafs to the root node.
 
-Let $P_p = P[\cup_{v \in V(T_p)} X_v]$ for some pattern graph tree decomposition $(T, r, X)$, where $T_p$ denotes the subtree rooted in vertex $p$.
+Let $P_p = P[\cup_{v \in V(T_p)} X_v]$ be an induced subgraph for some pattern graph tree decomposition $(T, r, X)$, where $T_p$ denotes the subtree rooted in vertex $p$.
 Algorithm \ref{count-homomorphisms} counts the number of homomorphisms extending some existing injective homomorphism $\phi$.
 The outline corresponds to the one given in D{\'{\i}}az~{\em et al.}~\cite{DST02} as counting list-colorings, but only constrains any vertices in $\phi$ to their given target vertex.
 Note that $F_p = \left\{X_p \rightarrow V(H)\right\}$, i.e. the set of all maps from the bag to the host graph.
@@ -525,7 +527,7 @@ In addition, $I_p(\psi)$ is the number of homomorphisms from $P_p$ onto $H$ t
       \EndFor
   \ElsIf {$C = \left\{q\right\}$ $\texttt{and}$ $X_q \setminus X_p \not = \emptyset $}
       \State $\left\{v\right\}\gets X_q \setminus X_p$
-      \State $\forall \psi \in F_p: I_p(\psi) \gets I_{q_1}(\psi) I_{q_2}(\psi)$
+      \State $\forall \psi \in F_p: I_p(\psi) \gets \sum_{a \in V(H)} I_{q}(\psi \cup \left\{ (v,a) \right\})$
   \EndIf
 \EndFor
 
@@ -557,18 +559,18 @@ This can be expressed as $\textsc{IsoSubgraphs}(P, H) = \frac{inj(P, H)}{aut(P)}
 
 \section{Thin subgraphs as weighted disjoint triples}
 Using the notions introduced up to now, it is possible to study the contributions made by Bj\"orklund \emph{et al.}~\cite{BHKK13}.
-The paper introduces the following notion of triples:
+The paper introduces the following function:
 
 \begin{defn}
 \label{def:delta}
 $\Delta(f, g, h) = \sum_{\substack{A, B, C \in U\\A \cap B = A \cap C = B \cap C = \emptyset}} f(A)g(B)h(C)$
 \end{defn}
 
-These are used to express counting subgraphs in terms of algebraic objects. $U$ is a universe from which the three disjoint sets are drawn.
+This is used to express counting subgraphs in terms of algebraic objects. $U$ is a universe from which the three disjoint sets are drawn.
 Similarly to a counting algorithm presented by Fomin~\emph{et al.}~\cite{FLRRS12}, Bj\"orklund \emph{et al.}~\cite{BHKK13} use a partition scheme which counts all injective isomorphisms in parts.
 
 \begin{defn}
-A 5-partitioning of the pattern graph $P$ with bounded pathwidth $p$ is a collection of sets $L \sqcup S \sqcup M \sqcup T \sqcup R = V(P)$, such that:
+A \emph{balanced 3-way separation} of the pattern graph $P$ with bounded pathwidth $p$ is a collection of sets $L \sqcup S \sqcup M \sqcup T \sqcup R = V(P)$, such that:
 \begin{itemize}
 \item Every edge $e \in E(P)$ connects vertices between at most two consecutive sets in the ordering $L, S, M, T, R$.
 \item The separator sets $S$ and $T$ have size bounded in the pathwidth, i.e. $|S|, |T| \leq p$
@@ -584,18 +586,19 @@ where $A,B,C \subseteq (H \setminus \phi(S) \setminus \phi(T))$.
 \begin{figure}[here]
 \centering
 \includegraphics[width=8cm]{images/sketch_homo.png} 
-\caption[Mapping]{Mapping of pattern graph onto host graph given an injective homomorphism phi}
+\caption[Mapping]{Mapping of pattern graph onto host graph given an injective homomorphism $\phi$}
 \label{fig:homo-viz}
 \end{figure}
 
 Enumerating all such possible $O(|H|^{2p})$ injective homomorphisms mapping $S$ and $T$ to the host graph,
 all possible extensions to $\phi$ can be considered using theorem \ref{thm:fomin}.
+Recall that $inj_\phi(P, H)$ denotes the number of injective homomorphisms extending $\phi$ from $P$ onto $H$.
 Formally the following functions over subsets of the host graph are defined, for each candidate $\phi$:
 
 \begin{itemize}
-\item $f_\phi(A)$: The number of injective homomorphisms mapping $P[L \cup S]$ onto $H[A \cup \phi(S)]$.
-\item $g_\phi(B)$: The number of injective homomorphisms mapping $P[S \cup M \cup T]$ onto $H[\phi(S) \cup B \cup \phi(T)]$.
-\item $h_\phi(C)$: The number of injective homomorphisms mapping $P[R \cup T]$ onto $H[C \cup \phi(T)]$.
+\item $f_\phi(A) = inj_\phi(P[L \cup S], H[A \cup \phi(S)])$
+\item $g_\phi(B) = inj_\phi(P[S \cup M \cup T], H[\phi(S) \cup B \cup \phi(T)])$
+\item $h_\phi(C) = inj_\phi(P[R \cup T], H[C \cup \phi(T)])$
 \end{itemize}
 
 Hence the number of injective homomorphisms extending a candidate $\phi$ is $\Delta_\phi(f_\phi, g_\phi, h_\phi)$ \cite{BHKK13}.
@@ -669,7 +672,7 @@ Given a parameter $0 \leq \gamma \leq 1/2$ the authors take the following:
 \end{itemize}
 
 The parameter $\gamma$ is chosen in order to balance the contribution in running time from both of the families, which depends on the efficiency of evaluating certain matrix multiplications.
-Assuming efficient evaluation of square matrix multiplication and multiplication of $N^\alpha * N$ with an $N * N^\alpha$ matrix, this results in time complexity $O^*(n^{0.4547|P|})$ in order to construct the system \cite{BHKK13}.
+Assuming efficient evaluation of square matrix multiplication and multiplication of $N^\alpha \times N$ with an $N \times N^\alpha$ matrix, this results in time complexity $O^*(n^{0.4547|P|})$ in order to construct the system \cite{BHKK13}.
 
 Following this, Gaussian elimination is applied on the system in order to solve the resulting set of equations in polynomial time, and return $x_{3q}$ as $\Delta_\phi$.
 
@@ -739,6 +742,11 @@ In addition this does not constrain input graphs to have specific structural pro
 A.~Bj{\"o}rklund, P.~Kaski, and L.~Kowalik.
 \newblock Counting Thin Subgraphs via Packings Faster Than Meet-in-the-Middle Time.
 \newblock {\em Proc. of the 25th Annual ACM-SIAM Symp. on Disc. Algo.}  45:594--603, 2014.
+
+\bibitem{B10}
+A.~Bj{\"o}rklund.
+\newblock Determinant Sums for Undirected Hamiltonicity
+\newblock {\em Prof. of FOCS’10, 2010}  173--182, 2010.
 
 \bibitem{FG06}
 J.~Flum, and M.~Grohe.
